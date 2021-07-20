@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="收集一下常用脚本。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="常用脚本或配置收集">
+<meta property="og:url" content="https://blog.futurenotfound.top/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/index.html">
+<meta property="og:site_name" content="FutureNotFound">
+<meta property="og:description" content="收集一下常用脚本。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-07-20T04:34:20.000Z">
+<meta property="article:modified_time" content="2021-07-20T22:29:57.863Z">
+<meta property="article:author" content="maozhijie">
+<meta property="article:tag" content="Shell">
+<meta property="article:tag" content="Gitlab">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/avatar.png">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/avatar.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar.png">
+          
+        
+    
+    <!-- title -->
+    <title>常用脚本或配置收集</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="FutureNotFound" type="application/atom+xml" />
+    
+    
+      <script>
+          (function(d) {
+            var config = {
+              kitId: 'twa1wya',
+              scriptTimeout: 3000,
+              async: true
+            },
+            h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+          })(document);
+      </script>
+    
+    <!-- Google Adsense -->
+    
+            <script data-ad-client="ca-pub-8520855660949547" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2021/07/18/NextCloud-%E4%BC%98%E5%8C%96%EF%BC%88Docker-Compose-%E5%90%AF%E5%8A%A8%EF%BC%89/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="toc-div" class="toc-article" >
+        
+          <div id="toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Gitlab-CI-gitlab-ci-yml-%E5%AE%9E%E7%8E%B0%E6%8F%90%E4%BA%A4%E4%BB%A3%E7%A0%81%E5%88%B0-Git-%E8%87%AA%E5%8A%A8%E5%88%9B%E5%BB%BA-Tag"><span class="toc-number">1.</span> <span class="toc-text">Gitlab CI .gitlab-ci.yml 实现提交代码到 Git 自动创建 Tag</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Springboot-%E9%A1%B9%E7%9B%AE%E9%87%8D%E5%90%AF%E8%84%9A%E6%9C%AC"><span class="toc-number">2.</span> <span class="toc-text">Springboot 项目重启脚本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Logback-%E9%85%8D%E7%BD%AE%E5%8E%8B%E7%BC%A9%E5%8E%86%E5%8F%B2%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6"><span class="toc-number">3.</span> <span class="toc-text">Logback 配置压缩历史日志文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SpringBoot-%E6%9C%8D%E5%8A%A1%E5%88%9D%E5%A7%8B%E5%8C%96%E5%AE%8C%E6%88%90%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC"><span class="toc-number">4.</span> <span class="toc-text">SpringBoot 服务初始化完成事件监听</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Swagger-%E9%85%8D%E7%BD%AE%E5%85%A8%E5%B1%80%E6%8E%88%E6%9D%83"><span class="toc-number">5.</span> <span class="toc-text">Swagger 配置全局授权</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ant-%E5%8C%B9%E9%85%8D%E7%94%A8%E6%88%B7%E8%B7%AF%E7%94%B1%E6%9D%83%E9%99%90"><span class="toc-number">6.</span> <span class="toc-text">Ant 匹配用户路由权限</span></a></li></ol>
+          </div>
+        
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        
+    <h1 class="posttitle" itemprop="name headline">
+        常用脚本或配置收集
+    </h1>
+
+
+
+        <div class="meta">
+            
+    <div class="postdate">
+      
+        <time datetime="2021-07-20T04:34:20.000Z" itemprop="datePublished">2021-07-20</time>
+        
+      
+    </div>
+
+
+            
+    <div class="article-category">
+<!--        <i class="fas fa-archive"></i>-->
+        <a class="category-link" href="/categories/Shell/">Shell</a>
+    </div>
+
+
+            
+    <div class="article-tag">
+<!--        <i class="fas fa-tag"></i>-->
+        <a class="tag-link-link" href="/tags/Gitlab/" rel="tag">Gitlab</a>, <a class="tag-link-link" href="/tags/Shell/" rel="tag">Shell</a>
+    </div>
+
+
+            
+    <div class="article-count">
+        <span id="/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/" class="leancloud_visitors" data-flag-title="常用脚本或配置收集">
+            <span class="post-meta-item-text">浏览量</span>
+            <span class="leancloud-visitors-count">0</span>
+        </span>
+    </div>
+
+            
+    <div class="wordcount-symbols">
+      
+        <span>字数</span>
+        <span>7.9k</span>
+      
+    </div>
+    <div class="wordcount-time">
+      
+        <span>阅读时间</span>
+        <span>14 分钟</span>
+      
+    </div>
+
+
+        </div>
+    </header>
+    
+
+    <div class="content" itemprop="articleBody">
+        
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">目录</strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Gitlab-CI-gitlab-ci-yml-%E5%AE%9E%E7%8E%B0%E6%8F%90%E4%BA%A4%E4%BB%A3%E7%A0%81%E5%88%B0-Git-%E8%87%AA%E5%8A%A8%E5%88%9B%E5%BB%BA-Tag"><span class="toc-number">1.</span> <span class="toc-text">Gitlab CI .gitlab-ci.yml 实现提交代码到 Git 自动创建 Tag</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Springboot-%E9%A1%B9%E7%9B%AE%E9%87%8D%E5%90%AF%E8%84%9A%E6%9C%AC"><span class="toc-number">2.</span> <span class="toc-text">Springboot 项目重启脚本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Logback-%E9%85%8D%E7%BD%AE%E5%8E%8B%E7%BC%A9%E5%8E%86%E5%8F%B2%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6"><span class="toc-number">3.</span> <span class="toc-text">Logback 配置压缩历史日志文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SpringBoot-%E6%9C%8D%E5%8A%A1%E5%88%9D%E5%A7%8B%E5%8C%96%E5%AE%8C%E6%88%90%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC"><span class="toc-number">4.</span> <span class="toc-text">SpringBoot 服务初始化完成事件监听</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Swagger-%E9%85%8D%E7%BD%AE%E5%85%A8%E5%B1%80%E6%8E%88%E6%9D%83"><span class="toc-number">5.</span> <span class="toc-text">Swagger 配置全局授权</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ant-%E5%8C%B9%E9%85%8D%E7%94%A8%E6%88%B7%E8%B7%AF%E7%94%B1%E6%9D%83%E9%99%90"><span class="toc-number">6.</span> <span class="toc-text">Ant 匹配用户路由权限</span></a></li></ol>
+        </div>
+    </div>
+
+<hr/>
+        <p>收集一下常用脚本。</p>
+<span id="more"></span>
+
+<h2 id="Gitlab-CI-gitlab-ci-yml-实现提交代码到-Git-自动创建-Tag"><a href="#Gitlab-CI-gitlab-ci-yml-实现提交代码到-Git-自动创建-Tag" class="headerlink" title="Gitlab CI .gitlab-ci.yml 实现提交代码到 Git 自动创建 Tag"></a>Gitlab CI <code>.gitlab-ci.yml</code> 实现提交代码到 Git 自动创建 Tag</h2><figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">stages:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">create_tag</span></span><br><span class="line"></span><br><span class="line"><span class="attr">create_tag:</span></span><br><span class="line">  <span class="attr">stage:</span> <span class="string">create_tag</span></span><br><span class="line">  <span class="attr">only:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">test</span></span><br><span class="line">  <span class="attr">script:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">git</span> <span class="string">config</span> <span class="string">--global</span> <span class="string">user.email</span> <span class="string">&quot;liuzhuoming@testmail.com;&quot;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">git</span> <span class="string">config</span> <span class="string">--global</span> <span class="string">user.name</span> <span class="string">&quot;liuzhuoming&quot;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">git</span> <span class="string">fetch</span> <span class="string">origin</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">git</span> <span class="string">pull</span> <span class="string">origin</span> <span class="string">master</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">git</span> <span class="string">fetch</span> <span class="string">--tags</span> <span class="string">-f</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">git</span> <span class="string">remote</span> <span class="string">set-url</span> <span class="string">origin</span> <span class="string">http://NAME:SECRET@git.xx.com/project/test-project.git</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">git</span> <span class="string">tag</span> <span class="string">-l</span> <span class="string">-n</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">tag_name=`date</span> <span class="string">&quot;+%Y%m%d%H%M&quot;</span><span class="string">`</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">git</span> <span class="string">tag</span> <span class="string">$&#123;tag_name&#125;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">git</span> <span class="string">push</span> <span class="string">origin</span> <span class="string">$&#123;tag_name&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Springboot-项目重启脚本"><a href="#Springboot-项目重启脚本" class="headerlink" title="Springboot 项目重启脚本"></a>Springboot 项目重启脚本</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">PROJECT_NAME=test-api</span><br><span class="line">PROJECT_VERSION=1.0-SNAPSHOT</span><br><span class="line">PROJECT_DIR=/home/lzm/project/2/</span><br><span class="line">PID=$(ps -ef | grep <span class="variable">$PROJECT_NAME</span>-*.jar | grep -v grep | awk <span class="string">&#x27;&#123; print $2 &#125;&#x27;</span>)</span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$PID</span>&quot;</span> ]</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&#x27;启动服务&#x27;</span></span><br><span class="line">    nohup java -jar $PROJECT_DIR<span class="variable">$PROJECT_NAME</span>-<span class="variable">$PROJECT_VERSION</span>.jar --spring.profiles.active=dev &gt; /dev/null 2&gt;&amp;1 &amp;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&#x27;重启服务&#x27;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="built_in">kill</span> <span class="variable">$PID</span></span><br><span class="line">    <span class="built_in">kill</span> -9 <span class="variable">$PID</span></span><br><span class="line">    nohup java -jar $PROJECT_DIR<span class="variable">$PROJECT_NAME</span>-<span class="variable">$PROJECT_VERSION</span>.jar --spring.profiles.active=dev &gt; /dev/null 2&gt;&amp;1 &amp;</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Logback-配置压缩历史日志文件"><a href="#Logback-配置压缩历史日志文件" class="headerlink" title="Logback 配置压缩历史日志文件"></a>Logback 配置压缩历史日志文件</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--按天生成日志--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">&quot;logFile&quot;</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--此处$&#123;user.dir&#125;指的是执行启动命令的位置/工作目录，并非项目所在位置--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">file</span>&gt;</span>$&#123;user.dir&#125;/logs/project-name/logback.log<span class="tag">&lt;/<span class="name">file</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">rollingPolicy</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--生成日志文件名称--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">FileNamePattern</span>&gt;</span>$&#123;user.dir&#125;/logs/project-name/%d&#123;yyyy-MM-dd&#125;.log.gz<span class="tag">&lt;/<span class="name">FileNamePattern</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--日志文件保留天数--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">MaxHistory</span>&gt;</span>7<span class="tag">&lt;/<span class="name">MaxHistory</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">rollingPolicy</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 日志输出格式 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.classic.encoder.PatternLayoutEncoder&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>$&#123;p_file&#125;<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">charset</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">charset</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="SpringBoot-服务初始化完成事件监听"><a href="#SpringBoot-服务初始化完成事件监听" class="headerlink" title="SpringBoot 服务初始化完成事件监听"></a>SpringBoot 服务初始化完成事件监听</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Async</span></span><br><span class="line"><span class="meta">@Order</span></span><br><span class="line"><span class="meta">@EventListener(WebServerInitializedEvent.class)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterStart</span><span class="params">(WebServerInitializedEvent event)</span> </span>&#123;</span><br><span class="line">    Environment environment = event.getApplicationContext().getEnvironment();</span><br><span class="line">    String appName = environment.getProperty(<span class="string">&quot;spring.application.name&quot;</span>).toUpperCase();</span><br><span class="line">    <span class="keyword">int</span> localPort = event.getWebServer().getPort();</span><br><span class="line">    String profile = StringUtils.arrayToCommaDelimitedString(environment.getActiveProfiles());</span><br><span class="line">    log.info(<span class="string">&quot;---[&#123;&#125;]---启动完成，当前使用的端口:[&#123;&#125;]，环境变量:[&#123;&#125;]---&quot;</span>, appName, localPort, profile);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Swagger-配置全局授权"><a href="#Swagger-配置全局授权" class="headerlink" title="Swagger 配置全局授权"></a>Swagger 配置全局授权</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> com.google.common.collect.Lists;</span><br><span class="line"><span class="keyword">import</span> io.swagger.annotations.Api;</span><br><span class="line"><span class="keyword">import</span> io.swagger.annotations.ApiOperation;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Profile;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.builders.ApiInfoBuilder;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.builders.PathSelectors;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.builders.RequestHandlerSelectors;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.service.ApiInfo;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.service.ApiKey;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.service.AuthorizationScope;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.service.SecurityReference;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.spi.DocumentationType;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.spi.service.contexts.SecurityContext;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.spring.web.plugins.Docket;</span><br><span class="line"><span class="keyword">import</span> springfox.documentation.swagger2.annotations.EnableSwagger2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="meta">@Profile(&#123;&quot;local&quot;, &quot;test&quot;&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2)</span><br><span class="line">                .apiInfo(apiInfo())</span><br><span class="line">                .select()</span><br><span class="line">                .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))</span><br><span class="line">                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build()</span><br><span class="line">                .securitySchemes(securitySchemes())</span><br><span class="line">                .securityContexts(securityContexts());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> ApiInfo <span class="title">apiInfo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ApiInfoBuilder()</span><br><span class="line">                .title(<span class="string">&quot;API接口文档&quot;</span>)</span><br><span class="line">                .description(<span class="string">&quot;API接口文档&quot;</span>)</span><br><span class="line">                .version(<span class="string">&quot;1.1.0&quot;</span>)</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> List&lt;ApiKey&gt; <span class="title">securitySchemes</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Lists.newArrayList(</span><br><span class="line">                <span class="keyword">new</span> ApiKey(<span class="string">&quot;token&quot;</span>, <span class="string">&quot;token&quot;</span>, <span class="string">&quot;header&quot;</span>)</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> List&lt;SecurityContext&gt; <span class="title">securityContexts</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Lists.newArrayList(</span><br><span class="line">                SecurityContext.builder()</span><br><span class="line">                        .securityReferences(defaultAuth())</span><br><span class="line">                        .build()</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> List&lt;SecurityReference&gt; <span class="title">defaultAuth</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        AuthorizationScope authorizationScope = <span class="keyword">new</span> AuthorizationScope(<span class="string">&quot;global&quot;</span>, <span class="string">&quot;accessEverything&quot;</span>);</span><br><span class="line">        AuthorizationScope[] authorizationScopes = <span class="keyword">new</span> AuthorizationScope[]&#123;authorizationScope&#125;;</span><br><span class="line">        <span class="keyword">return</span> Lists.newArrayList(</span><br><span class="line">                <span class="keyword">new</span> SecurityReference(<span class="string">&quot;token&quot;</span>, authorizationScopes));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Ant-匹配用户路由权限"><a href="#Ant-匹配用户路由权限" class="headerlink" title="Ant 匹配用户路由权限"></a>Ant 匹配用户路由权限</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> lombok.AllArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.lang3.StringUtils;</span><br><span class="line"><span class="keyword">import</span> org.springframework.core.annotation.Order;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"><span class="keyword">import</span> org.springframework.util.AntPathMatcher;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.*;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.annotation.WebFilter;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.OutputStream;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.Collectors;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 登录过滤器</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Order(2)</span></span><br><span class="line"><span class="meta">@WebFilter(filterName = &quot;LoginFilter&quot;, urlPatterns = &quot;/*&quot;)</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginFilter</span> <span class="keyword">implements</span> <span class="title">Filter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 不登录就可以访问</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> List&lt;String&gt; NOT_LOGIN_URL = List.of(</span><br><span class="line">            <span class="comment">//static</span></span><br><span class="line">            <span class="string">&quot;css/**&quot;</span>,</span><br><span class="line">            <span class="string">&quot;js/**&quot;</span>,</span><br><span class="line">            <span class="comment">//swagger</span></span><br><span class="line">            <span class="string">&quot;swagger-ui.html**&quot;</span>,</span><br><span class="line">            <span class="string">&quot;swagger-resources**&quot;</span>,</span><br><span class="line">            <span class="string">&quot;v2/api-docs**&quot;</span>,</span><br><span class="line">            <span class="string">&quot;webjars/springfox-swagger-ui/**&quot;</span>,</span><br><span class="line">            <span class="comment">//other</span></span><br><span class="line">            <span class="comment">//登录</span></span><br><span class="line">            <span class="string">&quot;login/**&quot;</span>,</span><br><span class="line">            <span class="string">&quot;/&quot;</span></span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 登录后无需权限配置就可以访问</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> List&lt;String&gt; LOGIN_URL = List.of(</span><br><span class="line">            <span class="comment">//当前登录人的菜单列表</span></span><br><span class="line">            <span class="string">&quot;menu/list&quot;</span></span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doFilter</span><span class="params">(ServletRequest request, ServletResponse response, FilterChain chain)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        HttpServletRequest req = (HttpServletRequest) request;</span><br><span class="line">        HttpServletResponse resp = (HttpServletResponse) response;</span><br><span class="line"></span><br><span class="line">        String url = req.getRequestURI();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (matchAny(NOT_LOGIN_URL, url)) &#123;</span><br><span class="line">            chain.doFilter(req, resp);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String token = req.getHeader(<span class="string">&quot;token&quot;</span>);</span><br><span class="line">        <span class="comment">//jwt解析</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            User user = JwtUtil.getUser(token);</span><br><span class="line">            <span class="comment">//存入线程变量</span></span><br><span class="line">            CurrentLoginUser.set(user);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            Result result = <span class="keyword">new</span> Result();</span><br><span class="line">            result.setMsg(<span class="string">&quot;token不存在或者已过期&quot;</span>);</span><br><span class="line">            OutputStream outputStream = resp.getOutputStream();</span><br><span class="line">            outputStream.write(JsonUtil.toJSONString(result).getBytes());</span><br><span class="line">            outputStream.flush();</span><br><span class="line">            outputStream.close();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (matchAny(LOGIN_URL, url)) &#123;</span><br><span class="line">            chain.doFilter(req, resp);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//一级菜单</span></span><br><span class="line">        List&lt;MenuTree&gt; menuTreeList = ...;</span><br><span class="line">        <span class="comment">//二级菜单</span></span><br><span class="line">        List&lt;MenuTree&gt; menuTreeLevel2List = menuTreeList.stream()</span><br><span class="line">                .flatMap(menuTree -&gt; menuTree.getMenus().stream())</span><br><span class="line">                .collect(Collectors.toList());</span><br><span class="line">        <span class="comment">//三级菜单</span></span><br><span class="line">        List&lt;MenuTree&gt; menuTreeLevel3List = menuTreeLevel2List.stream()</span><br><span class="line">                .flatMap(menuTree -&gt; menuTree.getMenus().stream())</span><br><span class="line">                .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">        List&lt;MenuTree&gt; allMenuTree = <span class="keyword">new</span> ArrayList&lt;&gt;(menuTreeList);</span><br><span class="line">        allMenuTree.addAll(menuTreeLevel2List);</span><br><span class="line">        allMenuTree.addAll(menuTreeLevel3List);</span><br><span class="line"></span><br><span class="line">        List&lt;String&gt; allMenuServerPath = allMenuTree.stream()</span><br><span class="line">                .flatMap(menuTree -&gt; Arrays.stream(menuTree.getUrls().split(<span class="string">&quot;,&quot;</span>)))</span><br><span class="line">                .filter(StringUtils::isNotBlank)</span><br><span class="line">                .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">        <span class="comment">//用户是否存在该路径请求权限</span></span><br><span class="line">        <span class="keyword">if</span> (!matchAny(allMenuServerPath, url)) &#123;</span><br><span class="line">            Result result = <span class="keyword">new</span> Result();</span><br><span class="line">            result.setMsg(String.format(<span class="string">&quot;该用户没有%s接口访问权限&quot;</span>, url));</span><br><span class="line">            OutputStream outputStream = resp.getOutputStream();</span><br><span class="line">            outputStream.write(JsonUtil.toJSONString(result).getBytes());</span><br><span class="line">            outputStream.flush();</span><br><span class="line">            outputStream.close();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        chain.doFilter(request, response);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断url请求是否配置在patterns列表中</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">matchAny</span><span class="params">(List&lt;String&gt; patterns, String url)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> AntPathMatcher antPathMatcher = <span class="keyword">new</span> AntPathMatcher();</span><br><span class="line">        <span class="keyword">for</span> (String pattern : patterns) &#123;</span><br><span class="line">            <span class="keyword">if</span> (url.startsWith(<span class="string">&quot;/&quot;</span>)) url = url.substring(<span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (pattern.startsWith(<span class="string">&quot;/&quot;</span>)) pattern = pattern.substring(<span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (antPathMatcher.match(pattern, url)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        
+    <blockquote>
+<p>本文是maozhijie的原创文章，转载请提前告知作者并且标明出处。<br>内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a> 协议。</p>
+</blockquote>
+
+
+    </div>
+    
+    <div class="donate">
+        <hr/>
+        <button class="donates-btn" onclick="show_donates()">打赏</button>
+        <div class="donate-imgs">
+            
+                <img class="donate-img" src="/images/wechat.jpg" alt="微信打赏"/>
+            
+            
+                <img class="donate-img" src="/images/alipay.jpg" alt="支付宝打赏"/>
+            
+        </div>
+        <script type="text/javascript">
+            function show_donates() {
+                $(".donate-imgs").show();
+                $(".donate-imgs").css("display", "flex");
+                $(".donates-btn").hide();
+            }
+        </script>
+    </div>
+
+</article>
+
+<div class="pagination-index">
+    
+        <hr/>
+        
+        
+            <a style="float:right;" href="/2021/07/18/NextCloud-%E4%BC%98%E5%8C%96%EF%BC%88Docker-Compose-%E5%90%AF%E5%8A%A8%EF%BC%89/">NextCloud 优化（Docker Compose 启动）<i class="fas fa-angle-right"></i>
+            </a>
+        
+    
+</div>
+
+    <hr/>
+    <button class="blog-post-comments-btn" onclick="show_posts_comments()">显示评论</button>
+    <div class="blog-post-comments" style="display: none">
+        <div id="valine_comments"></div>
+    </div>
+    <script type="text/javascript">
+        function show_posts_comments() {
+            $(".blog-post-comments").show();
+            $(".blog-post-comments-btn").hide();
+        }
+    </script>
+    <hr/>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Gitlab-CI-gitlab-ci-yml-%E5%AE%9E%E7%8E%B0%E6%8F%90%E4%BA%A4%E4%BB%A3%E7%A0%81%E5%88%B0-Git-%E8%87%AA%E5%8A%A8%E5%88%9B%E5%BB%BA-Tag"><span class="toc-number">1.</span> <span class="toc-text">Gitlab CI .gitlab-ci.yml 实现提交代码到 Git 自动创建 Tag</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Springboot-%E9%A1%B9%E7%9B%AE%E9%87%8D%E5%90%AF%E8%84%9A%E6%9C%AC"><span class="toc-number">2.</span> <span class="toc-text">Springboot 项目重启脚本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Logback-%E9%85%8D%E7%BD%AE%E5%8E%8B%E7%BC%A9%E5%8E%86%E5%8F%B2%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6"><span class="toc-number">3.</span> <span class="toc-text">Logback 配置压缩历史日志文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SpringBoot-%E6%9C%8D%E5%8A%A1%E5%88%9D%E5%A7%8B%E5%8C%96%E5%AE%8C%E6%88%90%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC"><span class="toc-number">4.</span> <span class="toc-text">SpringBoot 服务初始化完成事件监听</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Swagger-%E9%85%8D%E7%BD%AE%E5%85%A8%E5%B1%80%E6%8E%88%E6%9D%83"><span class="toc-number">5.</span> <span class="toc-text">Swagger 配置全局授权</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ant-%E5%8C%B9%E9%85%8D%E7%94%A8%E6%88%B7%E8%B7%AF%E7%94%B1%E6%9D%83%E9%99%90"><span class="toc-number">6.</span> <span class="toc-text">Ant 匹配用户路由权限</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://blog.futurenotfound.top/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://blog.futurenotfound.top/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/&text=常用脚本或配置收集"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://blog.futurenotfound.top/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/&title=常用脚本或配置收集"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://blog.futurenotfound.top/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/&is_video=false&description=常用脚本或配置收集"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=常用脚本或配置收集&body=Check out this article: https://blog.futurenotfound.top/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://blog.futurenotfound.top/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/&title=常用脚本或配置收集"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://blog.futurenotfound.top/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/&title=常用脚本或配置收集"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://blog.futurenotfound.top/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/&title=常用脚本或配置收集"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://blog.futurenotfound.top/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/&title=常用脚本或配置收集"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://blog.futurenotfound.top/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/&name=常用脚本或配置收集&description=&lt;p&gt;收集一下常用脚本。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://blog.futurenotfound.top/2021/07/20/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC%E6%94%B6%E8%97%8F/&t=常用脚本或配置收集"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer"style="display: none">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+<!--        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>-->
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer-extend">
+  <div class="footer-left">
+    &copy;
+    
+    
+    2021
+    maozhijie
+    
+      <a target="_blank" rel="noopener" href='https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh'>CC BY-NC-SA 4.0</a>
+    
+    Powered by
+    <a href="https://hexo.io/" target="_blank" rel="nofollow">hexo</a
+  </div>
+</footer>
+<footer id="footer">
+  <div class="footer-left">
+    
+      <a target="_blank" rel="noopener" href='http://beian.miit.gov.cn/'>陕ICP备2021008394号-1</a>
+      
+    
+		 	<a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61011302001259">陕公网安备 61011302001259号</a>
+    
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/friends/">友链</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // copy-btn HTML
+            var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+            btn += '<i class="far fa-clone"></i>';
+            btn += '</span>';
+            // mount it!
+            $(".highlight table").before(btn);
+            var clip = new ClipboardJS('.btn-copy', {
+                text: function (trigger) {
+                    return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str, it) => str + it.innerText + '\n', '')
+                }
+            });
+            clip.on('success', function (e) {
+                e.trigger.setAttribute('aria-label', "复制成功!");
+                e.clearSelection();
+            })
+        })
+    </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?f01b82d682e8b8c168d7e14cb993e170";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+<!-- Valine Comments -->
+
+    
+<script src="/lib/valine/Valine.min.js"></script>
+
+    <script type="text/javascript">
+        new Valine({
+            el: '#valine_comments',
+            appId: 'PYGSxQwogW3Qi5wie5gbK6tt-gzGzoHsz',
+            appKey: 'VgamBFH9CKcnxsD6oM4Ijm0n',
+            placeholder: '想对作者说点什么？',
+            avatar: 'identicon',
+            pageSize: '8',
+            lang: 'zh-cn',
+            visitor: 'true',
+            recordIP: 'true',
+            enableQQ: 'true',
+            meta: ['nick', 'mail', 'link'],
+            requiredFields: ['nick', 'mail'],
+        });
+    </script>
+
+</body>
+</html>

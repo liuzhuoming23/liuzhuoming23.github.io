@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="解决几个遗留问题。这里用上上一章《注册中心&#x2F;配置中心-Nacos》的代码开始修改。上次有人问我代码里面那些特别奇怪的代码，比如 List&lt;String&gt; scopes &#x3D; (List&lt;String&gt;) ((Map) ((Map) ((OAuth2Authentication) authentication).getUserAuthentication().getDetail">
+<meta property="og:type" content="article">
+<meta property="og:title" content="授权中心-Oauth2+JWT补全">
+<meta property="og:url" content="https://blog.futurenotfound.top/2020/01/09/Spring-Cloud-Greenwich-SR2-14/index.html">
+<meta property="og:site_name" content="FutureNotFound">
+<meta property="og:description" content="解决几个遗留问题。这里用上上一章《注册中心&#x2F;配置中心-Nacos》的代码开始修改。上次有人问我代码里面那些特别奇怪的代码，比如 List&lt;String&gt; scopes &#x3D; (List&lt;String&gt;) ((Map) ((Map) ((OAuth2Authentication) authentication).getUserAuthentication().getDetail">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-09T07:32:32.000Z">
+<meta property="article:modified_time" content="2021-07-20T22:29:57.827Z">
+<meta property="article:author" content="maozhijie">
+<meta property="article:tag" content="Spring Cloud">
+<meta property="article:tag" content="Spring Cloud Oauth2">
+<meta property="article:tag" content="JWT">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/avatar.png">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/avatar.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar.png">
+          
+        
+    
+    <!-- title -->
+    <title>授权中心-Oauth2+JWT补全</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="FutureNotFound" type="application/atom+xml" />
+    
+    
+      <script>
+          (function(d) {
+            var config = {
+              kitId: 'twa1wya',
+              scriptTimeout: 3000,
+              async: true
+            },
+            h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+          })(document);
+      </script>
+    
+    <!-- Google Adsense -->
+    
+            <script data-ad-client="ca-pub-8520855660949547" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2020/01/11/hotp-totp/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/12/30/GitLab%EF%BC%88Gitea%EF%BC%89-Jenkins%E9%85%8D%E7%BD%AEMaven%E9%A1%B9%E7%9B%AECI-CD/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="toc-div" class="toc-article" >
+        
+          <div id="toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JWT-%E5%A2%9E%E5%BC%BA%E5%99%A8"><span class="toc-number">1.</span> <span class="toc-text">JWT 增强器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E6%93%8D%E4%BD%9C%EF%BC%88%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">用户操作（增删改查）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scope-%E7%9A%84%E8%BF%90%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">Scope 的运用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Scope-%E4%BD%9C%E6%95%B0%E6%8D%AE%E6%9D%83%E9%99%90"><span class="toc-number">3.1.</span> <span class="toc-text">Scope 作数据权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oauth2-%E7%9A%84-Client-%E6%93%8D%E4%BD%9C%EF%BC%88%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">Oauth2 的 Client 操作（增删改查）</span></a></li></ol>
+          </div>
+        
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        
+    <h1 class="posttitle" itemprop="name headline">
+        授权中心-Oauth2+JWT补全
+    </h1>
+
+
+
+        <div class="meta">
+            
+    <div class="postdate">
+      
+        <time datetime="2020-01-09T07:32:32.000Z" itemprop="datePublished">2020-01-09</time>
+        
+      
+    </div>
+
+
+            
+    <div class="article-category">
+<!--        <i class="fas fa-archive"></i>-->
+        <a class="category-link" href="/categories/Java/">Java</a> › <a class="category-link" href="/categories/Java/Spring/">Spring</a> › <a class="category-link" href="/categories/Java/Spring/Spring-Cloud/">Spring Cloud</a>
+    </div>
+
+
+            
+    <div class="article-tag">
+<!--        <i class="fas fa-tag"></i>-->
+        <a class="tag-link-link" href="/tags/JWT/" rel="tag">JWT</a>, <a class="tag-link-link" href="/tags/Spring-Cloud/" rel="tag">Spring Cloud</a>, <a class="tag-link-link" href="/tags/Spring-Cloud-Oauth2/" rel="tag">Spring Cloud Oauth2</a>
+    </div>
+
+
+            
+    <div class="article-count">
+        <span id="/2020/01/09/Spring-Cloud-Greenwich-SR2-14/" class="leancloud_visitors" data-flag-title="授权中心-Oauth2+JWT补全">
+            <span class="post-meta-item-text">浏览量</span>
+            <span class="leancloud-visitors-count">0</span>
+        </span>
+    </div>
+
+            
+    <div class="wordcount-symbols">
+      
+        <span>字数</span>
+        <span>25k</span>
+      
+    </div>
+    <div class="wordcount-time">
+      
+        <span>阅读时间</span>
+        <span>45 分钟</span>
+      
+    </div>
+
+
+        </div>
+    </header>
+    
+
+    <div class="content" itemprop="articleBody">
+        
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">目录</strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JWT-%E5%A2%9E%E5%BC%BA%E5%99%A8"><span class="toc-number">1.</span> <span class="toc-text">JWT 增强器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E6%93%8D%E4%BD%9C%EF%BC%88%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">用户操作（增删改查）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scope-%E7%9A%84%E8%BF%90%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">Scope 的运用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Scope-%E4%BD%9C%E6%95%B0%E6%8D%AE%E6%9D%83%E9%99%90"><span class="toc-number">3.1.</span> <span class="toc-text">Scope 作数据权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oauth2-%E7%9A%84-Client-%E6%93%8D%E4%BD%9C%EF%BC%88%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">Oauth2 的 Client 操作（增删改查）</span></a></li></ol>
+        </div>
+    </div>
+
+<hr/>
+        <p>解决几个遗留问题。<br><em>这里用上上一章《注册中心/配置中心-Nacos》的代码开始修改。</em><br>上次有人问我代码里面那些特别奇怪的代码，比如</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">List&lt;String&gt; scopes = (List&lt;String&gt;) ((Map) ((Map) ((OAuth2Authentication) authentication).getUserAuthentication().getDetails()).get(<span class="string">&quot;oauth2Request&quot;</span>)).get(<span class="string">&quot;scope&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>是怎么获取到的，因为从 authentication 不管怎么正常的在 IDE 里面调用就很难调用出这么长的包括了很多强转的代码。实际上这是用 IDEA DEBUG 模式下的<code>Evaluate Expression</code>功能推算出来的，DEBUG 时候右键菜单就可以找到。虽然在 IDE 里没办法调用可能的强转类型的方法/变量，但是在这里就可以从 authentication 后面输入.就会显示出包括本身的方法/变量和推断出可能的强转类型可以调用的方法/变量。十分方便。</p>
+<span id="more"></span>
+
+<h2 id="JWT-增强器"><a href="#JWT-增强器" class="headerlink" title="JWT 增强器"></a>JWT 增强器</h2><p><em>以下修改都在 auth 项目中。</em><br>首先将之前项目生成的的 JWT 的 playload 部分（即第二部分）<code>JTdCJTIydXNlcl9uYW1lJTIyJTNBJTIyYWRtaW4lMjIlMkMlMjJzY29wZSUyMiUzQSU1QiUyMnNlcnZlciUyMiU1RCUyQyUyMmV4cCUyMiUzQTE1Nzg2Nzg2ODglMkMlMjJhdXRob3JpdGllcyUyMiUzQSU1QiUyMmElM0FnZXQlMjIlNUQlMkMlMjJqdGklMjIlM0ElMjI5ZmJlODYyNy0wNzk4LTQ4ZWEtYjVhNi1lY2VhOGJlODMyMDIlMjIlMkMlMjJjbGllbnRfaWQlMjIlM0ElMjJjbGllbnRfMiUyMiU3RA</code>进行 Base64 解码，得到内容：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;user_name&quot;</span>: <span class="string">&quot;admin&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;scope&quot;</span>: [<span class="string">&quot;server&quot;</span>],</span><br><span class="line">  <span class="attr">&quot;exp&quot;</span>: <span class="number">1578678688</span>,</span><br><span class="line">  <span class="attr">&quot;authorities&quot;</span>: [<span class="string">&quot;a:get&quot;</span>],</span><br><span class="line">  <span class="attr">&quot;jti&quot;</span>: <span class="string">&quot;9fbe8627-0798-48ea-b5a6-ecea8be83202&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;client_id&quot;</span>: <span class="string">&quot;client_2&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出里面只有六个参数，可以看出只作授权校验其实也足够，但有些情况下还是需要添加自定义的参数到 JWT 里面去（具体场景比较难想，就假装需要添加一个 boolean 的叫<code>test</code>的字段吧）。<br>添加 JWT 增强器：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> xyz.liuzhuoming.auth.configurer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.common.OAuth2AccessToken;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.OAuth2Authentication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.TokenEnhancer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * jwt增强器配置</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0-SNAPSHOT</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JwtTokenEnhancer</span> <span class="keyword">implements</span> <span class="title">TokenEnhancer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> OAuth2AccessToken <span class="title">enhance</span><span class="params">(OAuth2AccessToken oAuth2AccessToken, OAuth2Authentication oAuth2Authentication)</span> </span>&#123;</span><br><span class="line">        Map&lt;String, Object&gt; ext = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="comment">//添加自定义参数</span></span><br><span class="line">        ext.put(<span class="string">&quot;test&quot;</span>, <span class="keyword">true</span>);</span><br><span class="line">        ((DefaultOAuth2AccessToken) oAuth2AccessToken).setAdditionalInformation(ext);</span><br><span class="line">        <span class="keyword">return</span> oAuth2AccessToken;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改 JwtConfigurer 类，添加 JWT 增强器的 Bean：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> xyz.liuzhuoming.auth.configurer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.core.io.ClassPathResource;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.crypto.factory.PasswordEncoderFactories;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.crypto.password.PasswordEncoder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.TokenEnhancer;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.TokenStore;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.store.JwtTokenStore;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * jwt配置</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0-SNAPSHOT</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JwtConfigurer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> PasswordEncoder <span class="title">passwordEncoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> PasswordEncoderFactories.createDelegatingPasswordEncoder();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> JwtAccessTokenConverter <span class="title">jwtAccessTokenConverter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        JwtAccessTokenConverter accessTokenConverter = <span class="keyword">new</span> JwtAccessTokenConverter();</span><br><span class="line">        KeyStoreKeyFactory keyStoreKeyFactory =</span><br><span class="line">                <span class="keyword">new</span> KeyStoreKeyFactory(<span class="keyword">new</span> ClassPathResource(<span class="string">&quot;jwt.jks&quot;</span>), <span class="string">&quot;654321&quot;</span>.toCharArray());</span><br><span class="line">        accessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair(<span class="string">&quot;jwt&quot;</span>));</span><br><span class="line">        <span class="keyword">return</span> accessTokenConverter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TokenStore <span class="title">tokenStore</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> JwtTokenStore(jwtAccessTokenConverter());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//添加JWT增强器的Bean</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TokenEnhancer <span class="title">tokenEnhancer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> JwtTokenEnhancer();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改 AuthorizationServerConfigurer：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> xyz.liuzhuoming.auth.configurer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.connection.RedisConnectionFactory;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.authentication.AuthenticationManager;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UserDetailsService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.ClientDetailsService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.TokenEnhancer;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.TokenEnhancerChain;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.TokenStore;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.sql.DataSource;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 授权服务配置</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0-SNAPSHOT</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableAuthorizationServer</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AuthorizationServerConfigurer</span> <span class="keyword">extends</span> <span class="title">AuthorizationServerConfigurerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    AuthenticationManager authenticationManager;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    RedisConnectionFactory redisConnectionFactory;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> DataSource dataSource;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> TokenStore tokenStore;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserDetailsService userDetailsService;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> JwtAccessTokenConverter jwtAccessTokenConverter;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> TokenEnhancer tokenEnhancer;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(ClientDetailsServiceConfigurer clients)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        clients.withClientDetails(clientDetailsService());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(AuthorizationServerEndpointsConfigurer endpoints)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//因为多个增强器，这里使用增强器链</span></span><br><span class="line">        TokenEnhancerChain enhancerChain = <span class="keyword">new</span> TokenEnhancerChain();</span><br><span class="line">        List&lt;TokenEnhancer&gt; enhancerList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        enhancerList.add(tokenEnhancer);</span><br><span class="line">        enhancerList.add(jwtAccessTokenConverter);</span><br><span class="line">        enhancerChain.setTokenEnhancers(enhancerList);</span><br><span class="line"></span><br><span class="line">        endpoints</span><br><span class="line">                .tokenStore(tokenStore)</span><br><span class="line">                .authenticationManager(authenticationManager)</span><br><span class="line">                .userDetailsService(userDetailsService)</span><br><span class="line">                .accessTokenConverter(jwtAccessTokenConverter)</span><br><span class="line">                .tokenEnhancer(enhancerChain);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(AuthorizationServerSecurityConfigurer security)</span> </span>&#123;</span><br><span class="line">        security</span><br><span class="line">                .allowFormAuthenticationForClients()</span><br><span class="line">                .tokenKeyAccess(<span class="string">&quot;permitAll()&quot;</span>)</span><br><span class="line">                .checkTokenAccess(<span class="string">&quot;isAuthenticated()&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ClientDetailsService <span class="title">clientDetailsService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> JdbcClientDetailsService(dataSource);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改完成后重启 auth 项目。<br>用 Postman 请求 token 的 Post 请求<a target="_blank" rel="noopener" href="http://localhost:5432/auth/oauth/token?username=admin&password=123456&grant_type=password">http://localhost:5432/auth/oauth/token?username=admin&amp;password=123456&amp;grant_type=password</a>（注意<code>header</code>的<code>Basic Auth</code>不能丢），得到结果：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;access_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZXN0Ijp0cnVlLCJ1c2VyX25hbWUiOiJhZG1pbiIsInNjb3BlIjpbInNlcnZlciJdLCJleHAiOjE1Nzg2ODAyMzksImF1dGhvcml0aWVzIjpbImE6Z2V0Il0sImp0aSI6ImVmZDExZTM4LWVmYjUtNDdjYy1iZmE3LTk2NzAxYzljYTU5MCIsImNsaWVudF9pZCI6ImNsaWVudF8yIn0.jkXobY18MkgyOCRPra2z0vv-UQZVZh5YOX7wMkhAGVnmWJ8z9qnd89dY-okFmMhC7EVmejkLkMYw6Gr-UET9sjE-BsjSqFKnG3D2vDzyARSBKqoEXC7GqLGofR7jRylP8KTw9YBTdOxDrvFJJdZ4Tfa8v_RUDSrNEYcn7DGdd9YLsgBv34X1IoTLucATB6cJ55sY9mjlI_bFigs_qX2zvUdsLEPFaKx55B37wrX86HNgydF-oBbo-ijiWONV-WslzFEkD-5o64uedUdDUaxf5adG_hJJXe3mopjKtpYtDEebiNyR-fq7EnIits8DZpNMT5Nt6yWQqHgAS8AOIfZQTA&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;token_type&quot;</span>: <span class="string">&quot;bearer&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;refresh_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZXN0Ijp0cnVlLCJ1c2VyX25hbWUiOiJhZG1pbiIsInNjb3BlIjpbInNlcnZlciJdLCJhdGkiOiJlZmQxMWUzOC1lZmI1LTQ3Y2MtYmZhNy05NjcwMWM5Y2E1OTAiLCJleHAiOjE1ODEyMjkwMzksImF1dGhvcml0aWVzIjpbImE6Z2V0Il0sImp0aSI6ImEzMDdmMmZhLTRmNTAtNDhiMi1iNjExLTFlYWVlZjMxMjYwOCIsImNsaWVudF9pZCI6ImNsaWVudF8yIn0.Raywk6MTAFlB2C5362dd3nVJUkEsaojfethPFHFfFUEFNCkqETUAmb27rmj1bgxqmyvpecjwkYKOtAteKANaoXGUJYglNMH8wLt7qYiXGzoebxeEntkImUkpb6wyvzu7foblp0RR1mzqZwGxb1VehlfULxB14wuO-P8TD7j7lKAcruWvTmV6x_ma3jnhznS_hB0kH-L09OsUmNDcDl8GYaMk9h2U85rGWf0Fn4iJnvnzBixPit5cIFXCe2Ksm7wm1zHg-z_hDlQFGQnpjqABNvKRdqlIlPTbsh538YOKv1Ei4gDxFt1zMZu63bQPmJ8Mi_M-EwsBDA4mKHNKdgfIlQ&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;expires_in&quot;</span>: <span class="number">43199</span>,</span><br><span class="line">  <span class="attr">&quot;scope&quot;</span>: <span class="string">&quot;server&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;test&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;jti&quot;</span>: <span class="string">&quot;efd11e38-efb5-47cc-bfa7-96701c9ca590&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到<code>test</code>参数已经出现在返回值里面了。然后像上面做的一样解析 payload<code>eyJ0ZXN0Ijp0cnVlLCJ1c2VyX25hbWUiOiJhZG1pbiIsInNjb3BlIjpbInNlcnZlciJdLCJleHAiOjE1Nzg2ODAyMzksImF1dGhvcml0aWVzIjpbImE6Z2V0Il0sImp0aSI6ImVmZDExZTM4LWVmYjUtNDdjYy1iZmE3LTk2NzAxYzljYTU5MCIsImNsaWVudF9pZCI6ImNsaWVudF8yIn0</code>，得到结果：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;test&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;user_name&quot;</span>: <span class="string">&quot;admin&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;scope&quot;</span>: [<span class="string">&quot;server&quot;</span>],</span><br><span class="line">  <span class="attr">&quot;exp&quot;</span>: <span class="number">1578680239</span>,</span><br><span class="line">  <span class="attr">&quot;authorities&quot;</span>: [<span class="string">&quot;a:get&quot;</span>],</span><br><span class="line">  <span class="attr">&quot;jti&quot;</span>: <span class="string">&quot;efd11e38-efb5-47cc-bfa7-96701c9ca590&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;client_id&quot;</span>: <span class="string">&quot;client_2&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到<code>test</code>参数也存在 JWT 的 payload 里面。说明添加 JWT 增强器成功。<br><em>要在 client 端使用自定义的增强参数需要自行解析<code>Header</code>里面的<code>Authorization</code>，很简单，在这里就不做说明了。</em></p>
+<h2 id="用户操作（增删改查）"><a href="#用户操作（增删改查）" class="headerlink" title="用户操作（增删改查）"></a>用户操作（增删改查）</h2><p><em>以下修改都在 auth 项目中。</em><br>之前的用户名都是我自己生成之后配置在内存或者 Mysql 里面的，现在我们新增一个添加新用户的接口用来自己生成用户。<br>之前的用户密码都是通过 bcrypt 加密和解密的，而且相应的 Bean<code>PasswordEncoder</code>之前已经在<code>JwtConfigurer</code>类写好了只是一直没用，现在我们可以把它拿出来了。<br>首先修改 mapper，service，controller（密码加盐，接口校验，捕获异常等全部省略）：<br>修改 UserMapper.xml：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">mapper</span> <span class="meta-keyword">PUBLIC</span> <span class="meta-string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span></span></span><br><span class="line"><span class="meta">        <span class="meta-string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;xyz.liuzhuoming.auth.mapper.UserMapper&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;selectAuthoritiesByUsername&quot;</span> <span class="attr">parameterType</span>=<span class="string">&quot;string&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">resultType</span>=<span class="string">&quot;xyz.liuzhuoming.auth.entity.Authority&quot;</span>&gt;</span></span><br><span class="line">    SELECT a.id,a.`name`,a.authority</span><br><span class="line">    FROM authority a</span><br><span class="line">    LEFT JOIN role_authority ra ON ra.authority_id=a.id</span><br><span class="line">    LEFT JOIN user_role ur ON ra.role_id=ur.role_id</span><br><span class="line">    LEFT JOIN `user` u ON ur.user_id=u.id</span><br><span class="line">    WHERE u.username=#&#123;username&#125;</span><br><span class="line">  <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">insert</span> <span class="attr">id</span>=<span class="string">&quot;insertUser&quot;</span> <span class="attr">parameterType</span>=<span class="string">&quot;xyz.liuzhuoming.auth.entity.User&quot;</span>&gt;</span></span><br><span class="line">     INSERT INTO user (username,password)VALUES(#&#123;username&#125;,#&#123;password&#125;)</span><br><span class="line">  <span class="tag">&lt;/<span class="name">insert</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>修改 UserMapper：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> xyz.liuzhuoming.auth.mapper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.baomidou.mybatisplus.core.mapper.BaseMapper;</span><br><span class="line"><span class="keyword">import</span> org.apache.ibatis.annotations.Mapper;</span><br><span class="line"><span class="keyword">import</span> xyz.liuzhuoming.auth.entity.Authority;</span><br><span class="line"><span class="keyword">import</span> xyz.liuzhuoming.auth.entity.User;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 用户</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0-SNAPSHOT</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserMapper</span> <span class="keyword">extends</span> <span class="title">BaseMapper</span>&lt;<span class="title">User</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据用户名获取权限集合</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> username 用户名</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 权限集合</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">List&lt;Authority&gt; <span class="title">selectAuthoritiesByUsername</span><span class="params">(String username)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 新增用户</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> user 用户</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">insertUser</span><span class="params">(User user)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>新增 UserService 接口：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> xyz.liuzhuoming.auth.service.impl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> xyz.liuzhuoming.auth.entity.User;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 新增用户</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> user 用户</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">insertUser</span><span class="params">(User user)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改 UserDetailsServiceImpl 实现 UserService 接口：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> xyz.liuzhuoming.auth.service.impl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UserDetails;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UserDetailsService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UsernameNotFoundException;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.crypto.password.PasswordEncoder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"><span class="keyword">import</span> xyz.liuzhuoming.auth.entity.Authority;</span><br><span class="line"><span class="keyword">import</span> xyz.liuzhuoming.auth.entity.User;</span><br><span class="line"><span class="keyword">import</span> xyz.liuzhuoming.auth.mapper.UserMapper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 用户</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0-SNAPSHOT</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Service(&quot;userDetailsService&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserDetailsServiceImpl</span> <span class="keyword">implements</span> <span class="title">UserDetailsService</span>, <span class="title">UserService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserMapper userMapper;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> PasswordEncoder passwordEncoder;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> UserDetails <span class="title">loadUserByUsername</span><span class="params">(String username)</span> <span class="keyword">throws</span> UsernameNotFoundException </span>&#123;</span><br><span class="line">        LambdaQueryWrapper&lt;User&gt; userLambdaQueryWrapper = <span class="keyword">new</span> LambdaQueryWrapper&lt;&gt;();</span><br><span class="line">        userLambdaQueryWrapper</span><br><span class="line">                .eq(User::getUsername, username);</span><br><span class="line">        User user = userMapper.selectOne(userLambdaQueryWrapper);</span><br><span class="line">        List&lt;Authority&gt; authorityList = userMapper.selectAuthoritiesByUsername(username);</span><br><span class="line">        user.setAuthorities(<span class="keyword">new</span> ArrayList&lt;&gt;(<span class="keyword">new</span> HashSet&lt;&gt;(authorityList)));</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertUser</span><span class="params">(User user)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//使用bcrypt加密密码</span></span><br><span class="line">        user.setPassword(passwordEncoder.encode(user.getPassword()));</span><br><span class="line">        userMapper.insertUser(user);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改 UserController：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> xyz.liuzhuoming.auth.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.OAuth2Authentication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.PostMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"><span class="keyword">import</span> xyz.liuzhuoming.auth.entity.User;</span><br><span class="line"><span class="keyword">import</span> xyz.liuzhuoming.auth.service.impl.UserService;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.security.Principal;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/user&quot;)</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(value = &quot;/current&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Principal <span class="title">current</span><span class="params">(OAuth2Authentication oAuth2Authentication)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> oAuth2Authentication;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping</span></span><br><span class="line">    <span class="comment">//可以添加权限校验来防止没权限用户添加新用户，这里就不演示了</span></span><br><span class="line"><span class="comment">//    @PreAuthorize(&quot;hasAuthority(&#x27;user:insert&#x27;)&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">insert</span><span class="params">(User user)</span> </span>&#123;</span><br><span class="line">        userService.insertUser(user);</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改完成后重启 auth 项目，然后用 Postman 的 Post 请求<a target="_blank" rel="noopener" href="http://localhost:5432/auth/user?username=test&password=123456">http://localhost:5432/auth/user?username=test&amp;password=123456</a>来添加一个用户名为 test 密码为 123456 的新用户，返回：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;id&quot;</span>: <span class="literal">null</span>,</span><br><span class="line">  <span class="attr">&quot;username&quot;</span>: <span class="string">&quot;test&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;password&quot;</span>: <span class="string">&quot;&#123;bcrypt&#125;$2a$10$Hy13zqg3XsOaGkARIIryIOPWHWjS1h4fqs9yBT9Ez4WMFJ8fXMbsi&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;authorities&quot;</span>: <span class="literal">null</span>,</span><br><span class="line">  <span class="attr">&quot;enabled&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;credentialsNonExpired&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;accountNonExpired&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;accountNonLocked&quot;</span>: <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可见密码已经正确的被 bcrypt 加密了。<br>然后用 Postman 获取 token，修改之前的请求 token 的 Post 请求为<a target="_blank" rel="noopener" href="http://localhost:5432/auth/oauth/token?username=test&password=123456&grant_type=password">http://localhost:5432/auth/oauth/token?username=test&amp;password=123456&amp;grant_type=password</a>（注意<code>header</code>的<code>Basic Auth</code>不能丢），返回：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;access_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzg2ODI5ODQsInRlc3QiOnRydWUsInVzZXJfbmFtZSI6InRlc3QiLCJqdGkiOiI3NGRmODY1Zi03YWU2LTQ1MWMtYjE3ZS0xNGZjYzYzN2UxMjYiLCJjbGllbnRfaWQiOiJjbGllbnRfMiIsInNjb3BlIjpbInNlcnZlciJdfQ.l-b06T86TiqBbSXTAvTd6J3a2HncVi7VtmPCa6ERejFoVHV1qczBzfw1Lzz4XXuU1-JQJx217mASLgNv6_FRyiLglXtn5K0wrohEDSZkbJFOm0GNauNibFn8CvwBKqDnfH97wn5AwAmdp3AAQsB3heHK-5vKsSh-0_r3Gu_209AtAmkheot63vbeu0eaD3Q_CvzE3XrrrubsGh8P9z0NeeCEd67VovcFYOMhR2kh5T2UFBxBXunGiIz7K46OcxzKz2BDVaxUjIi5WIVP1XIsOJrQcm_ssGeATWSk1WbRGlcwJvyeHsIusuQzV0Z7GSANsOTOoFDs1N_bswqYbtsWiA&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;token_type&quot;</span>: <span class="string">&quot;bearer&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;refresh_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZXN0Ijp0cnVlLCJ1c2VyX25hbWUiOiJ0ZXN0Iiwic2NvcGUiOlsic2VydmVyIl0sImF0aSI6Ijc0ZGY4NjVmLTdhZTYtNDUxYy1iMTdlLTE0ZmNjNjM3ZTEyNiIsImV4cCI6MTU4MTIzMTc4NCwianRpIjoiZDM3Y2MwZDItZTMwMy00ZWRkLTk2ZmYtZGZmZTdhNWY1MDA1IiwiY2xpZW50X2lkIjoiY2xpZW50XzIifQ.bQcEpdUK613JkC0gR9LnbX04WwhV__6AqKYhQ-Q2kJhSyxS4SJxsy1yRTDRXM3mAWrXyXBDg5j-JZIpPYhpfQipDtjIhE3Ig_SkXklHCSmeLguqWea_x-9i8R3g2aioW8WBqc3s_nh3B7xn9AKDZ2rzlCwCLCzZ97NH8fWk4Q3u3u0IdwEV0wK5tBnES3zoIPudWqIDIUPUuPy21C5oy9gYR_oik0iMVuR-8m1_9IKGjwUxIh9JeeMgdalawg-PXrfNHnUZb9TzeTy4jZatnO4pVL9L0noeUzPxJb4uwXN2XRrkLy9Bb5TKXHn1fdx3IR5RnhIfwAKdIa3tDXYGHYQ&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;expires_in&quot;</span>: <span class="number">43199</span>,</span><br><span class="line">  <span class="attr">&quot;scope&quot;</span>: <span class="string">&quot;server&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;test&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;jti&quot;</span>: <span class="string">&quot;74df865f-7ae6-451c-b17e-14fcc637e126&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用这个<code>access_token</code>请求<a target="_blank" rel="noopener" href="http://localhost:5432/client/principle">http://localhost:5432/client/principle</a>（_虽然新增用户没有角色也没有权限，但是这个接口也不需要权限，所以可以正常请求_），返回：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;authorities&quot;</span>: [],</span><br><span class="line">  <span class="attr">&quot;details&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;remoteAddress&quot;</span>: <span class="string">&quot;192.168.0.106&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;sessionId&quot;</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="attr">&quot;tokenValue&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzg2ODI5ODQsInRlc3QiOnRydWUsInVzZXJfbmFtZSI6InRlc3QiLCJqdGkiOiI3NGRmODY1Zi03YWU2LTQ1MWMtYjE3ZS0xNGZjYzYzN2UxMjYiLCJjbGllbnRfaWQiOiJjbGllbnRfMiIsInNjb3BlIjpbInNlcnZlciJdfQ.l-b06T86TiqBbSXTAvTd6J3a2HncVi7VtmPCa6ERejFoVHV1qczBzfw1Lzz4XXuU1-JQJx217mASLgNv6_FRyiLglXtn5K0wrohEDSZkbJFOm0GNauNibFn8CvwBKqDnfH97wn5AwAmdp3AAQsB3heHK-5vKsSh-0_r3Gu_209AtAmkheot63vbeu0eaD3Q_CvzE3XrrrubsGh8P9z0NeeCEd67VovcFYOMhR2kh5T2UFBxBXunGiIz7K46OcxzKz2BDVaxUjIi5WIVP1XIsOJrQcm_ssGeATWSk1WbRGlcwJvyeHsIusuQzV0Z7GSANsOTOoFDs1N_bswqYbtsWiA&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;tokenType&quot;</span>: <span class="string">&quot;Bearer&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;decodedDetails&quot;</span>: <span class="literal">null</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;authenticated&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;userAuthentication&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;authorities&quot;</span>: [],</span><br><span class="line">    <span class="attr">&quot;details&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;authorities&quot;</span>: [],</span><br><span class="line">      <span class="attr">&quot;details&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;remoteAddress&quot;</span>: <span class="string">&quot;192.168.0.106&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;sessionId&quot;</span>: <span class="literal">null</span>,</span><br><span class="line">        <span class="attr">&quot;tokenValue&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzg2ODI5ODQsInRlc3QiOnRydWUsInVzZXJfbmFtZSI6InRlc3QiLCJqdGkiOiI3NGRmODY1Zi03YWU2LTQ1MWMtYjE3ZS0xNGZjYzYzN2UxMjYiLCJjbGllbnRfaWQiOiJjbGllbnRfMiIsInNjb3BlIjpbInNlcnZlciJdfQ.l-b06T86TiqBbSXTAvTd6J3a2HncVi7VtmPCa6ERejFoVHV1qczBzfw1Lzz4XXuU1-JQJx217mASLgNv6_FRyiLglXtn5K0wrohEDSZkbJFOm0GNauNibFn8CvwBKqDnfH97wn5AwAmdp3AAQsB3heHK-5vKsSh-0_r3Gu_209AtAmkheot63vbeu0eaD3Q_CvzE3XrrrubsGh8P9z0NeeCEd67VovcFYOMhR2kh5T2UFBxBXunGiIz7K46OcxzKz2BDVaxUjIi5WIVP1XIsOJrQcm_ssGeATWSk1WbRGlcwJvyeHsIusuQzV0Z7GSANsOTOoFDs1N_bswqYbtsWiA&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;tokenType&quot;</span>: <span class="string">&quot;Bearer&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;decodedDetails&quot;</span>: <span class="literal">null</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">&quot;authenticated&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">&quot;userAuthentication&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;authorities&quot;</span>: [],</span><br><span class="line">        <span class="attr">&quot;details&quot;</span>: <span class="literal">null</span>,</span><br><span class="line">        <span class="attr">&quot;authenticated&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">&quot;principal&quot;</span>: <span class="string">&quot;test&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;credentials&quot;</span>: <span class="string">&quot;N/A&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;test&quot;</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">&quot;principal&quot;</span>: <span class="string">&quot;test&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;oauth2Request&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;clientId&quot;</span>: <span class="string">&quot;client_2&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;scope&quot;</span>: [<span class="string">&quot;server&quot;</span>],</span><br><span class="line">        <span class="attr">&quot;requestParameters&quot;</span>: &#123;</span><br><span class="line">          <span class="attr">&quot;client_id&quot;</span>: <span class="string">&quot;client_2&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;resourceIds&quot;</span>: [],</span><br><span class="line">        <span class="attr">&quot;authorities&quot;</span>: [],</span><br><span class="line">        <span class="attr">&quot;approved&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">&quot;refresh&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">&quot;redirectUri&quot;</span>: <span class="literal">null</span>,</span><br><span class="line">        <span class="attr">&quot;responseTypes&quot;</span>: [],</span><br><span class="line">        <span class="attr">&quot;extensions&quot;</span>: &#123;&#125;,</span><br><span class="line">        <span class="attr">&quot;grantType&quot;</span>: <span class="literal">null</span>,</span><br><span class="line">        <span class="attr">&quot;refreshTokenRequest&quot;</span>: <span class="literal">null</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">&quot;credentials&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;clientOnly&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;test&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;authenticated&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">&quot;principal&quot;</span>: <span class="string">&quot;test&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;credentials&quot;</span>: <span class="string">&quot;N/A&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;test&quot;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;credentials&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;clientOnly&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="attr">&quot;principal&quot;</span>: <span class="string">&quot;test&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;oauth2Request&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;clientId&quot;</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="attr">&quot;scope&quot;</span>: [],</span><br><span class="line">    <span class="attr">&quot;requestParameters&quot;</span>: &#123;&#125;,</span><br><span class="line">    <span class="attr">&quot;resourceIds&quot;</span>: [],</span><br><span class="line">    <span class="attr">&quot;authorities&quot;</span>: [],</span><br><span class="line">    <span class="attr">&quot;approved&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">&quot;refresh&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">&quot;redirectUri&quot;</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="attr">&quot;responseTypes&quot;</span>: [],</span><br><span class="line">    <span class="attr">&quot;extensions&quot;</span>: &#123;&#125;,</span><br><span class="line">    <span class="attr">&quot;grantType&quot;</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="attr">&quot;refreshTokenRequest&quot;</span>: <span class="literal">null</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;test&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可见添加的新用户可以正常使用。<br>删除用户，修改用户信息，添加权限，添加角色等没难度，请自行实现。</p>
+<h2 id="Scope-的运用"><a href="#Scope-的运用" class="headerlink" title="Scope 的运用"></a>Scope 的运用</h2><p>之前一直没理解 Oauth2 的<code>scope</code>是做什么用的，而 client 又必须提供一个<code>scope</code>，不然请求 token 的时候会报错<code>Empty scope (either the client or the user is not allowed the requested scopes)</code>。<br>所以为了防止报错都是写死了一个<code>scope</code>值为<code>server</code>，但是写了又没利用到感觉十分奇怪，后来看到微信支付（或者微信公众号，具体忘记了）的 Oauth2 授权不同<code>scope</code>用作返回不同渠道的数据，突然想到 scope 完全可以用来做数据权限。</p>
+<h3 id="Scope-作数据权限"><a href="#Scope-作数据权限" class="headerlink" title="Scope 作数据权限"></a>Scope 作数据权限</h3><p>首先我们先确定两个<code>scope</code>，分别是<code>dev</code>和<code>test</code>，实际上名字不重要，只要是两个不同的就行。<br>然后去数据库修改<code>oauth_client_details</code>表的 client_1 的<code>scope</code>为<code>dev</code>，client_2 的<code>scope</code>为<code>test</code>（这两个 client 都是之前添加的）。<br>然后用 Postman 请求 token，访问<a target="_blank" rel="noopener" href="http://localhost:5432/auth/oauth/token?username=test&password=123456&grant_type=password">http://localhost:5432/auth/oauth/token?username=test&amp;password=123456&amp;grant_type=password</a>，<code>Basic Auth</code>为 client_2:123456，返回结果：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;access_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzg2ODQ4OTMsInRlc3QiOnRydWUsInVzZXJfbmFtZSI6InRlc3QiLCJqdGkiOiIxNTFlZDVmZi1lYWE1LTRhZjItYmU4Ny1mY2M0MmFmNmJkYjIiLCJjbGllbnRfaWQiOiJjbGllbnRfMiIsInNjb3BlIjpbInRlc3QiXX0.B11qq55IuL5pOVRA_prBofo9wpf6GFAv5PtZrcvtLtoSUSxsb2El-hjBNJhMsk1pu4BFtkoXB5BW16C_BQ5ISVWh92pq5qA63vNihNVlAqtW0YPz7smgfSzbs9KyGhSDR_LPz3XxuGdqc7L2Ayr5SfmSCJ87Gh53VaHNW-sI4zcAo_AoUdPfoJ-vsjdZPhVsSxjJ-51mahE_Jc5Ip3HA7O5MH0tQeVP1bBb7z05eNNjuc8Vnf5jd4yxJfRKpBi90OJKGMmFY-4NDxBrIaZPEW1kXLGrys50ZZKQoFHcUyD5_biEjWsqY_rAOsZZhwwj5YiLCRLAhJ1kUa9-YswBIyA&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;token_type&quot;</span>: <span class="string">&quot;bearer&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;refresh_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZXN0Ijp0cnVlLCJ1c2VyX25hbWUiOiJ0ZXN0Iiwic2NvcGUiOlsidGVzdCJdLCJhdGkiOiIxNTFlZDVmZi1lYWE1LTRhZjItYmU4Ny1mY2M0MmFmNmJkYjIiLCJleHAiOjE1ODEyMzM2OTMsImp0aSI6IjhmNWIyZjBhLWQ5NDQtNGE0Yy05OGEwLTg5ZTZmMjMxYmUyOSIsImNsaWVudF9pZCI6ImNsaWVudF8yIn0.YbpA6Xxtve9dygTqhGdL4d2DjK5fdUrLIpi-ZDEnhYayHxlbs_Hrk68LLHbaH-Pqk3YhOGkyHW6ljH4oQpmi9n0zYsY9tgXm6GGELbpw0VxEOeUkSBg8EXys6cP1Ra7xXi0Vkvj5dhkk3T1MaxhlhmgJjtRxKSNEn0Hn-_Os5EmG3YixRE8jeFsJbWv62nmQYr2jpSqwa92CMrINDlCbR2o2OFlFKbCAHD_PeD0rvDxsmMoXnvu_wgWZJZjJyHHauduaZfcq49ZlGcm5a_UulTbsCA1BkXYPP4zw-rlOemtqkN6BhblnrOzNBWDoHqn__ScK7Bi1OzYtelknSQSCyw&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;expires_in&quot;</span>: <span class="number">43199</span>,</span><br><span class="line">  <span class="attr">&quot;scope&quot;</span>: <span class="string">&quot;test&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;test&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;jti&quot;</span>: <span class="string">&quot;151ed5ff-eaa5-4af2-be87-fcc42af6bdb2&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可见 client_2 的<code>scope</code>已经修改为<code>test</code>了。<br>然后在数据库修改 client_1 的<code>authorized_grant_types</code>字段为<code>client_credentials,refresh_token,password</code>，再用 Postman 请求 token，访问<a target="_blank" rel="noopener" href="http://localhost:5432/auth/oauth/token?username=test&password=123456&grant_type=password">http://localhost:5432/auth/oauth/token?username=test&amp;password=123456&amp;grant_type=password</a>，<code>Basic Auth</code>为 client_1:123456，返回结果：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;access_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzg2ODUwNDIsInRlc3QiOnRydWUsInVzZXJfbmFtZSI6InRlc3QiLCJqdGkiOiJlMTI3ZjBiNC1iNzQ4LTQ4YzAtYTFlYS0wZjc3NzI3MjFkYmIiLCJjbGllbnRfaWQiOiJjbGllbnRfMSIsInNjb3BlIjpbImRldiJdfQ.f6FSkVo3i7MUmqLbDMgPS4XDWNiB7TPJw2k6tMeA8waw8rxyFsQWXnb_ujMfCfGxBBXZPbHLvus-B73WfDi18WJ4x-oITbOlUFnTwtzempK58YEqwcm62VeTB0s7D4fWIOZS9YiVL1uX7BoExxQ5KMZqD_Ynj_bYiDsCLL3cKBHL0s67eAO530zy4YkfkqAmcV5UNb8FuZoHyzQD2rxo5MH0YaNbMTUgS7h2foYi4vn1uZYZmeYGw5Zh7KvvkkuDmvDLC8iMAWToxwP_ZjL_m-7MeVNeLB3a4z5a0xBAhF5pMQGufvoEG9rWk_be7qGTprgPZupdDH6EsowP0IgAjQ&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;token_type&quot;</span>: <span class="string">&quot;bearer&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;refresh_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZXN0Ijp0cnVlLCJ1c2VyX25hbWUiOiJ0ZXN0Iiwic2NvcGUiOlsiZGV2Il0sImF0aSI6ImUxMjdmMGI0LWI3NDgtNDhjMC1hMWVhLTBmNzc3MjcyMWRiYiIsImV4cCI6MTU4MTIzMzg0MiwianRpIjoiMzdkY2ViN2UtNDhhOS00ODI1LWE3Y2MtZGY0ZTU3YjQ0YmZkIiwiY2xpZW50X2lkIjoiY2xpZW50XzEifQ.A1aLYQDCAEriF5h4TeCKyFudVHUG20wp3GBIgIPdkB3V0p5UOpvG4g5UDxUfAr2o7RDdPQLIv6Laj3ZuR3PIF8X7o7MniC6YVii5iO-VrUoY7XiO7D8-PWnLx-6N1PdiA6LsQI9ym4bIsrEhkbCitwB-uY094Ack2DI1NWIrLZMcg6GmDIQ0-oIut4SnFxqfV2g8kVnWkSwX0SnTWCskd11mtcGcmU4aMYBpvXjNviV0rzWM9VImiWa_pquMBY1HZC4spJRU3sidKW9Q1n7l3XmioiWi5igOPnAus2-GwtqhnV8q9VxSd-Ytq1Qfcm3oJqlTZl267c0HyOF74K7jdQ&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;expires_in&quot;</span>: <span class="number">43199</span>,</span><br><span class="line">  <span class="attr">&quot;scope&quot;</span>: <span class="string">&quot;dev&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;test&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;jti&quot;</span>: <span class="string">&quot;e127f0b4-b748-48c0-a1ea-0f7772721dbb&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可见 client_1 的<code>scope</code>已经修改为<code>dev</code>了。<br>然后修改 client 项目的 TestController 为：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> xyz.liuzhuoming.client.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.context.config.annotation.RefreshScope;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.access.prepost.PreAuthorize;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.Authentication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.OAuth2Authentication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 测试</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 1.0-SNAPSHOT</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@RefreshScope</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/a&quot;)</span></span><br><span class="line">    <span class="meta">@PreAuthorize(&quot;hasAuthority(&#x27;a:get&#x27;)&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">a</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;a&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/b&quot;)</span></span><br><span class="line">    <span class="meta">@PreAuthorize(&quot;hasAuthority(&#x27;b:get&#x27;)&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">b</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;b&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/principle&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Authentication <span class="title">principle</span><span class="params">(Authentication authentication)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> authentication;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//根据scope返回对应数据</span></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/data&quot;)</span></span><br><span class="line">    <span class="meta">@SuppressWarnings(&#123;&quot;rawtypes&quot;, &quot;unchecked&quot;&#125;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;String&gt; <span class="title">data</span><span class="params">(Authentication authentication)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//从Authentication获取scope集合</span></span><br><span class="line">        List&lt;String&gt; scopes = (List&lt;String&gt;) ((Map) ((Map) ((OAuth2Authentication) authentication).getUserAuthentication().getDetails()).get(<span class="string">&quot;oauth2Request&quot;</span>)).get(<span class="string">&quot;scope&quot;</span>);</span><br><span class="line">        List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;(scopes.size());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (String scope : scopes) &#123;</span><br><span class="line">            <span class="keyword">switch</span> (scope) &#123;</span><br><span class="line">                <span class="keyword">case</span> <span class="string">&quot;test&quot;</span>:</span><br><span class="line">                    list.add(<span class="string">&quot;11111&quot;</span>);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="string">&quot;dev&quot;</span>:</span><br><span class="line">                    list.add(<span class="string">&quot;123456&quot;</span>);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后用 client_2 请求 token 后在 Postman 带 token 请求<a target="_blank" rel="noopener" href="http://localhost:5432/client/data">http://localhost:5432/client/data</a>，返回：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">[<span class="string">&quot;11111&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>然后用 client_1 请求 token 后在 Postman 带 token 请求<a target="_blank" rel="noopener" href="http://localhost:5432/client/data">http://localhost:5432/client/data</a>，返回：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">[<span class="string">&quot;123456&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>可见正确的进行了不同数据权限的区分。</p>
+<h2 id="Oauth2-的-Client-操作（增删改查）"><a href="#Oauth2-的-Client-操作（增删改查）" class="headerlink" title="Oauth2 的 Client 操作（增删改查）"></a>Oauth2 的 Client 操作（增删改查）</h2><p>加密方式同用户模块。略</p>
+
+        
+    <blockquote>
+<p>本文是maozhijie的原创文章，转载请提前告知作者并且标明出处。<br>内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a> 协议。</p>
+</blockquote>
+
+
+    </div>
+    
+    <div class="donate">
+        <hr/>
+        <button class="donates-btn" onclick="show_donates()">打赏</button>
+        <div class="donate-imgs">
+            
+                <img class="donate-img" src="/images/wechat.jpg" alt="微信打赏"/>
+            
+            
+                <img class="donate-img" src="/images/alipay.jpg" alt="支付宝打赏"/>
+            
+        </div>
+        <script type="text/javascript">
+            function show_donates() {
+                $(".donate-imgs").show();
+                $(".donate-imgs").css("display", "flex");
+                $(".donates-btn").hide();
+            }
+        </script>
+    </div>
+
+</article>
+
+    <hr/>
+    <div class="post-series"><b>系列文章</b> #Spring Cloud
+        
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/25/Spring-Cloud-Greenwich-SR2-0/">
+                        (1)前言
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/25/Spring-Cloud-Greenwich-SR2-1/">
+                        (2)注册中心-Eureka
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/25/Spring-Cloud-Greenwich-SR2-2/">
+                        (3)服务间调用-Feign(🐦)
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/25/Spring-Cloud-Greenwich-SR2-3/">
+                        (4)路由中心-Gateway
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/08/05/Spring-Cloud-Greenwich-SR2-4/">
+                        (5)配置中心-Config
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/08/05/Spring-Cloud-Greenwich-SR2-5/">
+                        (6)配置中心-Bus
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/08/28/Spring-Cloud-Greenwich-SR2-6/">
+                        (7)监控中心-Admin
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/09/17/Spring-Cloud-Greenwich-SR2-7/">
+                        (8)监控中心-Sleuth+Zipkin
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/09/18/Spring-Cloud-Greenwich-SR2-8/">
+                        (9)监控中心-Elasticsearch+Zipkin
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/09/18/Spring-Cloud-Greenwich-SR2-9/">
+                        (10)监控中心-HystrixDashboard+Turbine
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/10/18/Spring-Cloud-Greenwich-SR2-10/">
+                        (11)授权中心-Oauth2+JWT
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/10/23/Spring-Cloud-Greenwich-SR2-11/">
+                        (12)注册中心/配置中心-Nacos
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/11/13/Spring-Cloud-Greenwich-SR2-12/">
+                        (13)动态路由-Gateway
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2020/01/09/Spring-Cloud-Greenwich-SR2-14/">
+                        (14)授权中心-Oauth2+JWT补全
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2020/02/26/Spring-Cloud-Greenwich-SR2-15/">
+                        (15)授权中心-Oauth2+JWT+HOTP(🐦)
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+
+<div class="pagination-index">
+    
+        <hr/>
+        
+            <a style="float:left;" href="/2020/01/11/hotp-totp/"><i class="fas fa-angle-left"></i>短信验证码&amp;两步验证码（HOTP&amp;TOTP）
+            </a>
+        
+        
+            <a style="float:right;" href="/2019/12/30/GitLab%EF%BC%88Gitea%EF%BC%89-Jenkins%E9%85%8D%E7%BD%AEMaven%E9%A1%B9%E7%9B%AECI-CD/">Jenkins配置Maven项目CI<i class="fas fa-angle-right"></i>
+            </a>
+        
+    
+</div>
+
+    <hr/>
+    <button class="blog-post-comments-btn" onclick="show_posts_comments()">显示评论</button>
+    <div class="blog-post-comments" style="display: none">
+        <div id="valine_comments"></div>
+    </div>
+    <script type="text/javascript">
+        function show_posts_comments() {
+            $(".blog-post-comments").show();
+            $(".blog-post-comments-btn").hide();
+        }
+    </script>
+    <hr/>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JWT-%E5%A2%9E%E5%BC%BA%E5%99%A8"><span class="toc-number">1.</span> <span class="toc-text">JWT 增强器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E6%93%8D%E4%BD%9C%EF%BC%88%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">用户操作（增删改查）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scope-%E7%9A%84%E8%BF%90%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">Scope 的运用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Scope-%E4%BD%9C%E6%95%B0%E6%8D%AE%E6%9D%83%E9%99%90"><span class="toc-number">3.1.</span> <span class="toc-text">Scope 作数据权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oauth2-%E7%9A%84-Client-%E6%93%8D%E4%BD%9C%EF%BC%88%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">Oauth2 的 Client 操作（增删改查）</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://blog.futurenotfound.top/2020/01/09/Spring-Cloud-Greenwich-SR2-14/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://blog.futurenotfound.top/2020/01/09/Spring-Cloud-Greenwich-SR2-14/&text=授权中心-Oauth2+JWT补全"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://blog.futurenotfound.top/2020/01/09/Spring-Cloud-Greenwich-SR2-14/&title=授权中心-Oauth2+JWT补全"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://blog.futurenotfound.top/2020/01/09/Spring-Cloud-Greenwich-SR2-14/&is_video=false&description=授权中心-Oauth2+JWT补全"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=授权中心-Oauth2+JWT补全&body=Check out this article: https://blog.futurenotfound.top/2020/01/09/Spring-Cloud-Greenwich-SR2-14/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://blog.futurenotfound.top/2020/01/09/Spring-Cloud-Greenwich-SR2-14/&title=授权中心-Oauth2+JWT补全"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://blog.futurenotfound.top/2020/01/09/Spring-Cloud-Greenwich-SR2-14/&title=授权中心-Oauth2+JWT补全"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://blog.futurenotfound.top/2020/01/09/Spring-Cloud-Greenwich-SR2-14/&title=授权中心-Oauth2+JWT补全"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://blog.futurenotfound.top/2020/01/09/Spring-Cloud-Greenwich-SR2-14/&title=授权中心-Oauth2+JWT补全"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://blog.futurenotfound.top/2020/01/09/Spring-Cloud-Greenwich-SR2-14/&name=授权中心-Oauth2+JWT补全&description=&lt;p&gt;解决几个遗留问题。&lt;br&gt;&lt;em&gt;这里用上上一章《注册中心/配置中心-Nacos》的代码开始修改。&lt;/em&gt;&lt;br&gt;上次有人问我代码里面那些特别奇怪的代码，比如&lt;/p&gt;
+&lt;figure class=&#34;highlight java&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;List&amp;lt;String&amp;gt; scopes = (List&amp;lt;String&amp;gt;) ((Map) ((Map) ((OAuth2Authentication) authentication).getUserAuthentication().getDetails()).get(&lt;span class=&#34;string&#34;&gt;&amp;quot;oauth2Request&amp;quot;&lt;/span&gt;)).get(&lt;span class=&#34;string&#34;&gt;&amp;quot;scope&amp;quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;是怎么获取到的，因为从 authentication 不管怎么正常的在 IDE 里面调用就很难调用出这么长的包括了很多强转的代码。实际上这是用 IDEA DEBUG 模式下的&lt;code&gt;Evaluate Expression&lt;/code&gt;功能推算出来的，DEBUG 时候右键菜单就可以找到。虽然在 IDE 里没办法调用可能的强转类型的方法/变量，但是在这里就可以从 authentication 后面输入.就会显示出包括本身的方法/变量和推断出可能的强转类型可以调用的方法/变量。十分方便。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://blog.futurenotfound.top/2020/01/09/Spring-Cloud-Greenwich-SR2-14/&t=授权中心-Oauth2+JWT补全"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer"style="display: none">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+<!--        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>-->
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer-extend">
+  <div class="footer-left">
+    &copy;
+    
+    
+    2021
+    maozhijie
+    
+      <a target="_blank" rel="noopener" href='https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh'>CC BY-NC-SA 4.0</a>
+    
+    Powered by
+    <a href="https://hexo.io/" target="_blank" rel="nofollow">hexo</a
+  </div>
+</footer>
+<footer id="footer">
+  <div class="footer-left">
+    
+      <a target="_blank" rel="noopener" href='http://beian.miit.gov.cn/'>陕ICP备2021008394号-1</a>
+      
+    
+		 	<a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61011302001259">陕公网安备 61011302001259号</a>
+    
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/friends/">友链</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // copy-btn HTML
+            var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+            btn += '<i class="far fa-clone"></i>';
+            btn += '</span>';
+            // mount it!
+            $(".highlight table").before(btn);
+            var clip = new ClipboardJS('.btn-copy', {
+                text: function (trigger) {
+                    return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str, it) => str + it.innerText + '\n', '')
+                }
+            });
+            clip.on('success', function (e) {
+                e.trigger.setAttribute('aria-label', "复制成功!");
+                e.clearSelection();
+            })
+        })
+    </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?f01b82d682e8b8c168d7e14cb993e170";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+<!-- Valine Comments -->
+
+    
+<script src="/lib/valine/Valine.min.js"></script>
+
+    <script type="text/javascript">
+        new Valine({
+            el: '#valine_comments',
+            appId: 'PYGSxQwogW3Qi5wie5gbK6tt-gzGzoHsz',
+            appKey: 'VgamBFH9CKcnxsD6oM4Ijm0n',
+            placeholder: '想对作者说点什么？',
+            avatar: 'identicon',
+            pageSize: '8',
+            lang: 'zh-cn',
+            visitor: 'true',
+            recordIP: 'true',
+            enableQQ: 'true',
+            meta: ['nick', 'mail', 'link'],
+            requiredFields: ['nick', 'mail'],
+        });
+    </script>
+
+</body>
+</html>

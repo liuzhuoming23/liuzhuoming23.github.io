@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="trie，又称前缀树或字典树，是一种有序树，用于保存关联数组，其中的键通常是字符串。与二叉查找树不同，键不是直接保存在节点中，而是由节点在树中的位置决定。一个节点的所有子孙都有相同的前缀，也就是这个节点对应的字符串，而根节点对应空字符串。一般情况下，不是所有的节点都有对应的值，只有叶子节点和部分内部节点所对应的键才有相关的值。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Trie（字典树）">
+<meta property="og:url" content="https://blog.futurenotfound.top/2019/09/12/trie/index.html">
+<meta property="og:site_name" content="FutureNotFound">
+<meta property="og:description" content="trie，又称前缀树或字典树，是一种有序树，用于保存关联数组，其中的键通常是字符串。与二叉查找树不同，键不是直接保存在节点中，而是由节点在树中的位置决定。一个节点的所有子孙都有相同的前缀，也就是这个节点对应的字符串，而根节点对应空字符串。一般情况下，不是所有的节点都有对应的值，只有叶子节点和部分内部节点所对应的键才有相关的值。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-09-12T09:29:53.000Z">
+<meta property="article:modified_time" content="2021-07-20T22:29:57.843Z">
+<meta property="article:author" content="maozhijie">
+<meta property="article:tag" content="数据结构">
+<meta property="article:tag" content="算法">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/avatar.png">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/avatar.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar.png">
+          
+        
+    
+    <!-- title -->
+    <title>Trie（字典树）</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="FutureNotFound" type="application/atom+xml" />
+    
+    
+      <script>
+          (function(d) {
+            var config = {
+              kitId: 'twa1wya',
+              scriptTimeout: 3000,
+              async: true
+            },
+            h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+          })(document);
+      </script>
+    
+    <!-- Google Adsense -->
+    
+            <script data-ad-client="ca-pub-8520855660949547" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/09/16/%E4%B8%8A%E4%BC%A0jar%E5%88%B0maven%E4%B8%AD%E5%A4%AE%E4%BB%93%E5%BA%93/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/08/28/Spring-Cloud-Greenwich-SR2-6/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="toc-div" class="toc-article" >
+        
+          <div id="toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8D%E6%90%BA%E5%B8%A6%E6%95%B0%E6%8D%AE%E7%9A%84-Trie-%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">不携带数据的 Trie 简单实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TestCase"><span class="toc-number">1.1.</span> <span class="toc-text">TestCase</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%BA%E5%B8%A6%E6%95%B0%E6%8D%AE%E7%9A%84-Trie-%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">携带数据的 Trie 简单实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TestCase-1"><span class="toc-number">2.1.</span> <span class="toc-text">TestCase</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%9D%A5%E6%BA%90"><span class="toc-number">3.</span> <span class="toc-text">参考来源</span></a></li></ol>
+          </div>
+        
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        
+    <h1 class="posttitle" itemprop="name headline">
+        Trie（字典树）
+    </h1>
+
+
+
+        <div class="meta">
+            
+    <div class="postdate">
+      
+        <time datetime="2019-09-12T09:29:53.000Z" itemprop="datePublished">2019-09-12</time>
+        
+      
+    </div>
+
+
+            
+    <div class="article-category">
+<!--        <i class="fas fa-archive"></i>-->
+        <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a> › <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a>
+    </div>
+
+
+            
+    <div class="article-tag">
+<!--        <i class="fas fa-tag"></i>-->
+        <a class="tag-link-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a>, <a class="tag-link-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a>
+    </div>
+
+
+            
+    <div class="article-count">
+        <span id="/2019/09/12/trie/" class="leancloud_visitors" data-flag-title="Trie（字典树）">
+            <span class="post-meta-item-text">浏览量</span>
+            <span class="leancloud-visitors-count">0</span>
+        </span>
+    </div>
+
+            
+    <div class="wordcount-symbols">
+      
+        <span>字数</span>
+        <span>4.9k</span>
+      
+    </div>
+    <div class="wordcount-time">
+      
+        <span>阅读时间</span>
+        <span>9 分钟</span>
+      
+    </div>
+
+
+        </div>
+    </header>
+    
+
+    <div class="content" itemprop="articleBody">
+        
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">目录</strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8D%E6%90%BA%E5%B8%A6%E6%95%B0%E6%8D%AE%E7%9A%84-Trie-%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">不携带数据的 Trie 简单实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TestCase"><span class="toc-number">1.1.</span> <span class="toc-text">TestCase</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%BA%E5%B8%A6%E6%95%B0%E6%8D%AE%E7%9A%84-Trie-%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">携带数据的 Trie 简单实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TestCase-1"><span class="toc-number">2.1.</span> <span class="toc-text">TestCase</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%9D%A5%E6%BA%90"><span class="toc-number">3.</span> <span class="toc-text">参考来源</span></a></li></ol>
+        </div>
+    </div>
+
+<hr/>
+        <blockquote>
+<p>trie，又称前缀树或字典树，是一种有序树，用于保存关联数组，其中的键通常是字符串。与二叉查找树不同，键不是直接保存在节点中，而是由节点在树中的位置决定。一个节点的所有子孙都有相同的前缀，也就是这个节点对应的字符串，而根节点对应空字符串。一般情况下，不是所有的节点都有对应的值，只有叶子节点和部分内部节点所对应的键才有相关的值。</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="不携带数据的-Trie-简单实现"><a href="#不携带数据的-Trie-简单实现" class="headerlink" title="不携带数据的 Trie 简单实现"></a>不携带数据的 Trie 简单实现</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.trie;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * trie</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@datetime</span> 2019/9/12 15:25</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Trie</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * root trie node</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="keyword">private</span> TrieNode root = <span class="keyword">new</span> TrieNode(<span class="keyword">false</span>, <span class="keyword">new</span> HashMap&lt;&gt;());</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * put word in trie</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> word word</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">    TrieNode node = root;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">char</span> c : word.toCharArray()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!node.nodes.containsKey(c)) &#123;</span><br><span class="line">        node.nodes.put(c, <span class="keyword">new</span> TrieNode(<span class="keyword">false</span>, <span class="keyword">new</span> HashMap&lt;&gt;()));</span><br><span class="line">      &#125;</span><br><span class="line">      node = node.nodes.get(c);</span><br><span class="line">    &#125;</span><br><span class="line">    node.containsTail = <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * the trie contains the word</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> word word</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@return</span> true:contains;false:not</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">contains</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">    TrieNode node = root;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">char</span> c : word.toCharArray()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!node.nodes.containsKey(c)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      node = node.nodes.get(c);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> node.containsTail;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * remove data from trie</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> word word</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">    TrieNode node = root;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">char</span> c : word.toCharArray()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!node.nodes.containsKey(c)) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      node = node.nodes.get(c);</span><br><span class="line">    &#125;</span><br><span class="line">    node.containsTail = <span class="keyword">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * trie node</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@datetime</span> 2019/9/12 15:27</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TrieNode</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * contains a word&#x27;s tail</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="keyword">boolean</span> containsTail;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * trie nodes</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  Map&lt;Character, TrieNode&gt; nodes;</span><br><span class="line"></span><br><span class="line">  TrieNode(<span class="keyword">boolean</span> containsTail, HashMap&lt;Character, TrieNode&gt; nodes) &#123;</span><br><span class="line">    <span class="keyword">this</span>.containsTail = containsTail;</span><br><span class="line">    <span class="keyword">this</span>.nodes = nodes;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="TestCase"><a href="#TestCase" class="headerlink" title="TestCase"></a>TestCase</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.liuzhuoming23.trie.Trie;</span><br><span class="line"><span class="keyword">import</span> org.junit.jupiter.api.Test;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@datetime</span> 2019/9/12 17:17</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TrieTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Test</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test01</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Trie trie = <span class="keyword">new</span> Trie();</span><br><span class="line">    System.out.println(trie.contains(<span class="string">&quot;test&quot;</span>));</span><br><span class="line">    trie.put(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">    System.out.println(trie.contains(<span class="string">&quot;test&quot;</span>));</span><br><span class="line">    trie.remove(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">    System.out.println(trie.contains(<span class="string">&quot;test&quot;</span>));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="literal">false</span></span><br><span class="line"><span class="literal">true</span></span><br><span class="line"><span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>在存储空间比较拮据或者字符串重合度比较高的场景下可以使用 Trie（比如 汉字词组，英语单词 的匹配），否则使用 HashMap 就可以了；</li>
+<li>绑定数据需要在 TrieNode 添加新属性并添加根据 word 获取数据的方法，<del>很简单就不演示了</del>，还是演示一下绑定数据和测试示例吧。</li>
+</ol>
+<h2 id="携带数据的-Trie-简单实现"><a href="#携带数据的-Trie-简单实现" class="headerlink" title="携带数据的 Trie 简单实现"></a>携带数据的 Trie 简单实现</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.trie;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * trie</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@datetime</span> 2019/9/12 15:25</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Trie</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * root trie node</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="keyword">private</span> TrieNode&lt;V&gt; root = <span class="keyword">new</span> TrieNode&lt;&gt;(<span class="keyword">false</span>, <span class="keyword">new</span> HashMap&lt;&gt;());</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * put word:data in trie</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> word word</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> data data</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(String word, V data)</span> </span>&#123;</span><br><span class="line">    TrieNode&lt;V&gt; node = root;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">char</span> c : word.toCharArray()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!node.nodes.containsKey(c)) &#123;</span><br><span class="line">        node.nodes.put(c, <span class="keyword">new</span> TrieNode&lt;V&gt;(<span class="keyword">false</span>, <span class="keyword">new</span> HashMap&lt;&gt;()));</span><br><span class="line">      &#125;</span><br><span class="line">      node = node.nodes.get(c);</span><br><span class="line">    &#125;</span><br><span class="line">    node.containsTail = <span class="keyword">true</span>;</span><br><span class="line">    node.data = data;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * get data by word from the trie</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> word word</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">    TrieNode&lt;V&gt; node = root;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">char</span> c : word.toCharArray()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!node.nodes.containsKey(c)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      node = node.nodes.get(c);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> node.containsTail ? node.data : <span class="keyword">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * the trie contains the word</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> word word</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@return</span> true:contains;false:not</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">contains</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">    TrieNode&lt;V&gt; node = root;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">char</span> c : word.toCharArray()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!node.nodes.containsKey(c)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      node = node.nodes.get(c);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> node.containsTail;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * remove data from trie</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> word word</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">    TrieNode&lt;V&gt; node = root;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">char</span> c : word.toCharArray()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!node.nodes.containsKey(c)) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      node = node.nodes.get(c);</span><br><span class="line">    &#125;</span><br><span class="line">    node.containsTail = <span class="keyword">false</span>;</span><br><span class="line">    node.data = <span class="keyword">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * trie node</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@datetime</span> 2019/9/12 15:27</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TrieNode</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * contains a word&#x27;s tail</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="keyword">boolean</span> containsTail;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * mount data</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  V data;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * trie nodes</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  Map&lt;Character, TrieNode&lt;V&gt;&gt; nodes;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * just for construct root node</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> containsTail containsTail</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> nodes nodes</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  TrieNode(<span class="keyword">boolean</span> containsTail, HashMap&lt;Character, TrieNode&lt;V&gt;&gt; nodes) &#123;</span><br><span class="line">    <span class="keyword">this</span>.containsTail = containsTail;</span><br><span class="line">    <span class="keyword">this</span>.nodes = nodes;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="TestCase-1"><a href="#TestCase-1" class="headerlink" title="TestCase"></a>TestCase</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.liuzhuoming23.trie.Trie;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> org.junit.jupiter.api.Test;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@datetime</span> 2019/9/12 17:17</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TrieTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Test</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test01</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Trie&lt;String[]&gt; trie = <span class="keyword">new</span> Trie&lt;&gt;();</span><br><span class="line">    System.out.println(trie.contains(<span class="string">&quot;test&quot;</span>));</span><br><span class="line">    trie.put(<span class="string">&quot;test&quot;</span>, <span class="keyword">new</span> String[]&#123;<span class="string">&quot;测试&quot;</span>&#125;);</span><br><span class="line">    System.out.println(trie.contains(<span class="string">&quot;test&quot;</span>));</span><br><span class="line">    System.out.println(Arrays.toString(trie.get(<span class="string">&quot;test&quot;</span>)));</span><br><span class="line">    trie.put(<span class="string">&quot;test&quot;</span>, <span class="keyword">new</span> String[]&#123;<span class="string">&quot;@测试&quot;</span>, <span class="string">&quot;@Test&quot;</span>&#125;);</span><br><span class="line">    System.out.println(Arrays.toString(trie.get(<span class="string">&quot;test&quot;</span>)));</span><br><span class="line">    trie.remove(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">    System.out.println(Arrays.toString(trie.get(<span class="string">&quot;test&quot;</span>)));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="literal">false</span></span><br><span class="line"><span class="literal">true</span></span><br><span class="line">[测试]</span><br><span class="line">[@测试, @Test]</span><br><span class="line">null</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考来源"><a href="#参考来源" class="headerlink" title="参考来源"></a>参考来源</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Trie">Trie - 维基百科，自由的百科全书</a></li>
+</ol>
+
+        
+    <blockquote>
+<p>本文是maozhijie的原创文章，转载请提前告知作者并且标明出处。<br>内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a> 协议。</p>
+</blockquote>
+
+
+    </div>
+    
+    <div class="donate">
+        <hr/>
+        <button class="donates-btn" onclick="show_donates()">打赏</button>
+        <div class="donate-imgs">
+            
+                <img class="donate-img" src="/images/wechat.jpg" alt="微信打赏"/>
+            
+            
+                <img class="donate-img" src="/images/alipay.jpg" alt="支付宝打赏"/>
+            
+        </div>
+        <script type="text/javascript">
+            function show_donates() {
+                $(".donate-imgs").show();
+                $(".donate-imgs").css("display", "flex");
+                $(".donates-btn").hide();
+            }
+        </script>
+    </div>
+
+</article>
+
+    <hr/>
+    <div class="post-series"><b>系列文章</b> #数据结构与算法
+        
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/16/bloom-filter/">
+                        (1)Bloom filter（布隆过滤器）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/09/12/trie/">
+                        (2)Trie（字典树）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/12/17/%E5%B2%9B%E5%B1%BF%E9%97%AE%E9%A2%98/">
+                        (3)扫雷（岛屿问题）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2020/01/11/hotp-totp/">
+                        (4)短信验证码&amp;两步验证码（HOTP&amp;TOTP）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/">
+                        (5)敏感词过滤（DFA+Trie）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+
+<div class="pagination-index">
+    
+        <hr/>
+        
+            <a style="float:left;" href="/2019/09/16/%E4%B8%8A%E4%BC%A0jar%E5%88%B0maven%E4%B8%AD%E5%A4%AE%E4%BB%93%E5%BA%93/"><i class="fas fa-angle-left"></i>打包Github的项目上传到Maven中央仓库
+            </a>
+        
+        
+            <a style="float:right;" href="/2019/08/28/Spring-Cloud-Greenwich-SR2-6/">监控中心-Admin<i class="fas fa-angle-right"></i>
+            </a>
+        
+    
+</div>
+
+    <hr/>
+    <button class="blog-post-comments-btn" onclick="show_posts_comments()">显示评论</button>
+    <div class="blog-post-comments" style="display: none">
+        <div id="valine_comments"></div>
+    </div>
+    <script type="text/javascript">
+        function show_posts_comments() {
+            $(".blog-post-comments").show();
+            $(".blog-post-comments-btn").hide();
+        }
+    </script>
+    <hr/>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8D%E6%90%BA%E5%B8%A6%E6%95%B0%E6%8D%AE%E7%9A%84-Trie-%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">不携带数据的 Trie 简单实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TestCase"><span class="toc-number">1.1.</span> <span class="toc-text">TestCase</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%BA%E5%B8%A6%E6%95%B0%E6%8D%AE%E7%9A%84-Trie-%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">携带数据的 Trie 简单实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TestCase-1"><span class="toc-number">2.1.</span> <span class="toc-text">TestCase</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%9D%A5%E6%BA%90"><span class="toc-number">3.</span> <span class="toc-text">参考来源</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://blog.futurenotfound.top/2019/09/12/trie/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://blog.futurenotfound.top/2019/09/12/trie/&text=Trie（字典树）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://blog.futurenotfound.top/2019/09/12/trie/&title=Trie（字典树）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://blog.futurenotfound.top/2019/09/12/trie/&is_video=false&description=Trie（字典树）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Trie（字典树）&body=Check out this article: https://blog.futurenotfound.top/2019/09/12/trie/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://blog.futurenotfound.top/2019/09/12/trie/&title=Trie（字典树）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://blog.futurenotfound.top/2019/09/12/trie/&title=Trie（字典树）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://blog.futurenotfound.top/2019/09/12/trie/&title=Trie（字典树）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://blog.futurenotfound.top/2019/09/12/trie/&title=Trie（字典树）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://blog.futurenotfound.top/2019/09/12/trie/&name=Trie（字典树）&description=&lt;blockquote&gt;
+&lt;p&gt;trie，又称前缀树或字典树，是一种有序树，用于保存关联数组，其中的键通常是字符串。与二叉查找树不同，键不是直接保存在节点中，而是由节点在树中的位置决定。一个节点的所有子孙都有相同的前缀，也就是这个节点对应的字符串，而根节点对应空字符串。一般情况下，不是所有的节点都有对应的值，只有叶子节点和部分内部节点所对应的键才有相关的值。&lt;/p&gt;
+&lt;/blockquote&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://blog.futurenotfound.top/2019/09/12/trie/&t=Trie（字典树）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer"style="display: none">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+<!--        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>-->
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer-extend">
+  <div class="footer-left">
+    &copy;
+    
+    
+    2021
+    maozhijie
+    
+      <a target="_blank" rel="noopener" href='https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh'>CC BY-NC-SA 4.0</a>
+    
+    Powered by
+    <a href="https://hexo.io/" target="_blank" rel="nofollow">hexo</a
+  </div>
+</footer>
+<footer id="footer">
+  <div class="footer-left">
+    
+      <a target="_blank" rel="noopener" href='http://beian.miit.gov.cn/'>陕ICP备2021008394号-1</a>
+      
+    
+		 	<a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61011302001259">陕公网安备 61011302001259号</a>
+    
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/friends/">友链</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // copy-btn HTML
+            var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+            btn += '<i class="far fa-clone"></i>';
+            btn += '</span>';
+            // mount it!
+            $(".highlight table").before(btn);
+            var clip = new ClipboardJS('.btn-copy', {
+                text: function (trigger) {
+                    return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str, it) => str + it.innerText + '\n', '')
+                }
+            });
+            clip.on('success', function (e) {
+                e.trigger.setAttribute('aria-label', "复制成功!");
+                e.clearSelection();
+            })
+        })
+    </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?f01b82d682e8b8c168d7e14cb993e170";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+<!-- Valine Comments -->
+
+    
+<script src="/lib/valine/Valine.min.js"></script>
+
+    <script type="text/javascript">
+        new Valine({
+            el: '#valine_comments',
+            appId: 'PYGSxQwogW3Qi5wie5gbK6tt-gzGzoHsz',
+            appKey: 'VgamBFH9CKcnxsD6oM4Ijm0n',
+            placeholder: '想对作者说点什么？',
+            avatar: 'identicon',
+            pageSize: '8',
+            lang: 'zh-cn',
+            visitor: 'true',
+            recordIP: 'true',
+            enableQQ: 'true',
+            meta: ['nick', 'mail', 'link'],
+            requiredFields: ['nick', 'mail'],
+        });
+    </script>
+
+</body>
+</html>

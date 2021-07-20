@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="前后端不分离的情况下图片验证码的做法一般是第一次请求会将 code 保存在 session 中并返回前端，第二次请求在校验的时候通过 sessionId 来保证同一次会话并从 session 中拿出 code 跟用户识别并提交的图片验证码 code 相对比，判断验证码是否有效。但是前后端分离情况下无法保证两次请求在一次会话中，所以保存 session 的做法行不通，但是可以采取类似的操作迂回实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过Redis实现前后端分离的图片验证码生成和校验">
+<meta property="og:url" content="https://blog.futurenotfound.top/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/index.html">
+<meta property="og:site_name" content="FutureNotFound">
+<meta property="og:description" content="前后端不分离的情况下图片验证码的做法一般是第一次请求会将 code 保存在 session 中并返回前端，第二次请求在校验的时候通过 sessionId 来保证同一次会话并从 session 中拿出 code 跟用户识别并提交的图片验证码 code 相对比，判断验证码是否有效。但是前后端分离情况下无法保证两次请求在一次会话中，所以保存 session 的做法行不通，但是可以采取类似的操作迂回实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-02T14:08:36.000Z">
+<meta property="article:modified_time" content="2021-07-20T22:29:57.863Z">
+<meta property="article:author" content="maozhijie">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="SpringBoot">
+<meta property="article:tag" content="Kaptcha">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/avatar.png">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/avatar.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar.png">
+          
+        
+    
+    <!-- title -->
+    <title>通过Redis实现前后端分离的图片验证码生成和校验</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="FutureNotFound" type="application/atom+xml" />
+    
+    
+      <script>
+          (function(d) {
+            var config = {
+              kitId: 'twa1wya',
+              scriptTimeout: 3000,
+              async: true
+            },
+            h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+          })(document);
+      </script>
+    
+    <!-- Google Adsense -->
+    
+            <script data-ad-client="ca-pub-8520855660949547" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2021/06/15/Spring-Boot%E9%A1%B9%E7%9B%AE%E7%89%88%E6%9C%AC%E5%8F%B7%E7%AE%A1%E7%90%86%E7%AD%96%E7%95%A5/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2021/05/09/%E9%80%9A%E8%BF%87AOP%E8%A7%A3%E5%86%B3%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B8%ADRabbitMQ%E6%B6%88%E6%81%AF%E5%B9%82%E7%AD%89%E6%80%A7%E9%97%AE%E9%A2%98/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="toc-div" class="toc-article" >
+        
+          <div id="toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">具体实现</span></a></li></ol>
+          </div>
+        
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        
+    <h1 class="posttitle" itemprop="name headline">
+        通过Redis实现前后端分离的图片验证码生成和校验
+    </h1>
+
+
+
+        <div class="meta">
+            
+    <div class="postdate">
+      
+        <time datetime="2021-06-02T14:08:36.000Z" itemprop="datePublished">2021-06-02</time>
+        
+      
+    </div>
+
+
+            
+    <div class="article-category">
+<!--        <i class="fas fa-archive"></i>-->
+        <a class="category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+            
+    <div class="article-tag">
+<!--        <i class="fas fa-tag"></i>-->
+        <a class="tag-link-link" href="/tags/Java/" rel="tag">Java</a>, <a class="tag-link-link" href="/tags/Kaptcha/" rel="tag">Kaptcha</a>, <a class="tag-link-link" href="/tags/Redis/" rel="tag">Redis</a>, <a class="tag-link-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a>
+    </div>
+
+
+            
+    <div class="article-count">
+        <span id="/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/" class="leancloud_visitors" data-flag-title="通过Redis实现前后端分离的图片验证码生成和校验">
+            <span class="post-meta-item-text">浏览量</span>
+            <span class="leancloud-visitors-count">0</span>
+        </span>
+    </div>
+
+            
+    <div class="wordcount-symbols">
+      
+        <span>字数</span>
+        <span>2.7k</span>
+      
+    </div>
+    <div class="wordcount-time">
+      
+        <span>阅读时间</span>
+        <span>5 分钟</span>
+      
+    </div>
+
+
+        </div>
+    </header>
+    
+
+    <div class="content" itemprop="articleBody">
+        
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">目录</strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">具体实现</span></a></li></ol>
+        </div>
+    </div>
+
+<hr/>
+        <p>前后端不分离的情况下图片验证码的做法一般是第一次请求会将 code 保存在 session 中并返回前端，第二次请求在校验的时候通过 sessionId 来保证同一次会话并从 session 中拿出 code 跟用户识别并提交的图片验证码 code 相对比，判断验证码是否有效。但是前后端分离情况下无法保证两次请求在一次会话中，所以保存 session 的做法行不通，但是可以采取类似的操作迂回实现。</p>
+<span id="more"></span>
+
+<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>做法既生成图片验证码的时候同时返回一个当前图片验证码对应的 id，并将其绑定关系保存在 Redis 中。校验的时候根据 id 在 Redis 中取出原始 code 跟用户上传的 code 相比对，根据结果进行下一步操作。来实现类似 sessionId 的操作。</p>
+<p>验证码返回方式：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> top.futurenotfound.demo.kaptcha;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.AllArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> lombok.Getter;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 验证码返回方式</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">KaptchaMode</span> </span>&#123;</span><br><span class="line">    BASE64(<span class="string">&quot;base64&quot;</span>),</span><br><span class="line">    URL(<span class="string">&quot;url&quot;</span>),</span><br><span class="line">    ;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String code;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>验证码返回值：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> top.futurenotfound.demo.kaptcha;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.AllArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"><span class="keyword">import</span> lombok.NoArgsConstructor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 验证码返回</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Kaptcha</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">6778764549600473414L</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回验证码方式</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * base64，url等</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String mode;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 验证码内容</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String context;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 验证码id</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String contextId;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>controller：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> top.futurenotfound.demo.kaptcha;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> cn.hutool.captcha.CaptchaUtil;</span><br><span class="line"><span class="keyword">import</span> cn.hutool.captcha.LineCaptcha;</span><br><span class="line"><span class="keyword">import</span> cn.hutool.core.lang.UUID;</span><br><span class="line"><span class="keyword">import</span> cn.hutool.core.util.ObjectUtil;</span><br><span class="line"><span class="keyword">import</span> cn.hutool.crypto.digest.MD5;</span><br><span class="line"><span class="keyword">import</span> lombok.AllArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.core.RedisTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.PostMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Objects;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 验证码controller</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;kaptcha&quot;)</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KaptchaController</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> RedisTemplate&lt;String, String&gt; redisTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Kaptcha <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        LineCaptcha captcha = CaptchaUtil.createLineCaptcha(<span class="number">200</span>, <span class="number">100</span>);</span><br><span class="line">        String context = captcha.getImageBase64();</span><br><span class="line">        String code = captcha.getCode();</span><br><span class="line">        String contextId = UUID.fastUUID().toString();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//将contextId和简单加密的code以kv的方式存入redis</span></span><br><span class="line">        redisTemplate.opsForValue().set(contextId, MD5.create().digestHex(code.toLowerCase()), <span class="number">5</span>, TimeUnit.MINUTES);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Kaptcha(KaptchaMode.BASE64.getCode(), context, contextId);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Boolean <span class="title">post</span><span class="params">(String code, String contextId)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (ObjectUtil.isEmpty(code)) &#123;</span><br><span class="line">            <span class="keyword">return</span> Boolean.FALSE;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//contextId对应的redis中的加密code</span></span><br><span class="line">        String md5Code = redisTemplate.opsForValue().get(contextId);</span><br><span class="line">        <span class="keyword">boolean</span> tf = Objects.equals(MD5.create().digestHex(code.toLowerCase()), md5Code);</span><br><span class="line">        <span class="keyword">if</span> (tf) &#123;</span><br><span class="line">            redisTemplate.delete(contextId);</span><br><span class="line">            log.info(<span class="string">&quot;验证码校验成功&quot;</span>);</span><br><span class="line">            <span class="comment">//do something</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> tf;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        
+    <blockquote>
+<p>本文是maozhijie的原创文章，转载请提前告知作者并且标明出处。<br>内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a> 协议。</p>
+</blockquote>
+
+
+    </div>
+    
+    <div class="donate">
+        <hr/>
+        <button class="donates-btn" onclick="show_donates()">打赏</button>
+        <div class="donate-imgs">
+            
+                <img class="donate-img" src="/images/wechat.jpg" alt="微信打赏"/>
+            
+            
+                <img class="donate-img" src="/images/alipay.jpg" alt="支付宝打赏"/>
+            
+        </div>
+        <script type="text/javascript">
+            function show_donates() {
+                $(".donate-imgs").show();
+                $(".donate-imgs").css("display", "flex");
+                $(".donates-btn").hide();
+            }
+        </script>
+    </div>
+
+</article>
+
+<div class="pagination-index">
+    
+        <hr/>
+        
+            <a style="float:left;" href="/2021/06/15/Spring-Boot%E9%A1%B9%E7%9B%AE%E7%89%88%E6%9C%AC%E5%8F%B7%E7%AE%A1%E7%90%86%E7%AD%96%E7%95%A5/"><i class="fas fa-angle-left"></i>Spring Boot项目版本号管理方案
+            </a>
+        
+        
+            <a style="float:right;" href="/2021/05/09/%E9%80%9A%E8%BF%87AOP%E8%A7%A3%E5%86%B3%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B8%ADRabbitMQ%E6%B6%88%E6%81%AF%E5%B9%82%E7%AD%89%E6%80%A7%E9%97%AE%E9%A2%98/">通过AOP解决分布式系统中RabbitMQ消息幂等性问题<i class="fas fa-angle-right"></i>
+            </a>
+        
+    
+</div>
+
+    <hr/>
+    <button class="blog-post-comments-btn" onclick="show_posts_comments()">显示评论</button>
+    <div class="blog-post-comments" style="display: none">
+        <div id="valine_comments"></div>
+    </div>
+    <script type="text/javascript">
+        function show_posts_comments() {
+            $(".blog-post-comments").show();
+            $(".blog-post-comments-btn").hide();
+        }
+    </script>
+    <hr/>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">具体实现</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://blog.futurenotfound.top/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://blog.futurenotfound.top/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/&text=通过Redis实现前后端分离的图片验证码生成和校验"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://blog.futurenotfound.top/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/&title=通过Redis实现前后端分离的图片验证码生成和校验"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://blog.futurenotfound.top/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/&is_video=false&description=通过Redis实现前后端分离的图片验证码生成和校验"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=通过Redis实现前后端分离的图片验证码生成和校验&body=Check out this article: https://blog.futurenotfound.top/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://blog.futurenotfound.top/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/&title=通过Redis实现前后端分离的图片验证码生成和校验"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://blog.futurenotfound.top/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/&title=通过Redis实现前后端分离的图片验证码生成和校验"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://blog.futurenotfound.top/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/&title=通过Redis实现前后端分离的图片验证码生成和校验"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://blog.futurenotfound.top/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/&title=通过Redis实现前后端分离的图片验证码生成和校验"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://blog.futurenotfound.top/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/&name=通过Redis实现前后端分离的图片验证码生成和校验&description=&lt;p&gt;前后端不分离的情况下图片验证码的做法一般是第一次请求会将 code 保存在 session 中并返回前端，第二次请求在校验的时候通过 sessionId 来保证同一次会话并从 session 中拿出 code 跟用户识别并提交的图片验证码 code 相对比，判断验证码是否有效。但是前后端分离情况下无法保证两次请求在一次会话中，所以保存 session 的做法行不通，但是可以采取类似的操作迂回实现。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://blog.futurenotfound.top/2021/06/02/%E9%80%9A%E8%BF%87Redis%E5%AE%9E%E7%8E%B0%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%9A%84%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81%E7%94%9F%E6%88%90%E5%92%8C%E6%A0%A1%E9%AA%8C/&t=通过Redis实现前后端分离的图片验证码生成和校验"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer"style="display: none">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+<!--        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>-->
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer-extend">
+  <div class="footer-left">
+    &copy;
+    
+    
+    2021
+    maozhijie
+    
+      <a target="_blank" rel="noopener" href='https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh'>CC BY-NC-SA 4.0</a>
+    
+    Powered by
+    <a href="https://hexo.io/" target="_blank" rel="nofollow">hexo</a
+  </div>
+</footer>
+<footer id="footer">
+  <div class="footer-left">
+    
+      <a target="_blank" rel="noopener" href='http://beian.miit.gov.cn/'>陕ICP备2021008394号-1</a>
+      
+    
+		 	<a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61011302001259">陕公网安备 61011302001259号</a>
+    
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/friends/">友链</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // copy-btn HTML
+            var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+            btn += '<i class="far fa-clone"></i>';
+            btn += '</span>';
+            // mount it!
+            $(".highlight table").before(btn);
+            var clip = new ClipboardJS('.btn-copy', {
+                text: function (trigger) {
+                    return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str, it) => str + it.innerText + '\n', '')
+                }
+            });
+            clip.on('success', function (e) {
+                e.trigger.setAttribute('aria-label', "复制成功!");
+                e.clearSelection();
+            })
+        })
+    </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?f01b82d682e8b8c168d7e14cb993e170";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+<!-- Valine Comments -->
+
+    
+<script src="/lib/valine/Valine.min.js"></script>
+
+    <script type="text/javascript">
+        new Valine({
+            el: '#valine_comments',
+            appId: 'PYGSxQwogW3Qi5wie5gbK6tt-gzGzoHsz',
+            appKey: 'VgamBFH9CKcnxsD6oM4Ijm0n',
+            placeholder: '想对作者说点什么？',
+            avatar: 'identicon',
+            pageSize: '8',
+            lang: 'zh-cn',
+            visitor: 'true',
+            recordIP: 'true',
+            enableQQ: 'true',
+            meta: ['nick', 'mail', 'link'],
+            requiredFields: ['nick', 'mail'],
+        });
+    </script>
+
+</body>
+</html>

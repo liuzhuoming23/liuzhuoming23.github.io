@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="上一章虽然收集到了日志信息，但是在 Zipkin 重启之后收集到的日志会直接消失。所以我们需要将日志信息进行持久化，这样 Zipkin 会从持久化仓库里面去取日志。可选的组件是 Mysql 或者 Elasticsearch 等。因为 Mysql 持久化太常见了，所以在这里我们选择 Elasticsearch（然而同样很常见）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="监控中心-Elasticsearch+Zipkin">
+<meta property="og:url" content="https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/index.html">
+<meta property="og:site_name" content="FutureNotFound">
+<meta property="og:description" content="上一章虽然收集到了日志信息，但是在 Zipkin 重启之后收集到的日志会直接消失。所以我们需要将日志信息进行持久化，这样 Zipkin 会从持久化仓库里面去取日志。可选的组件是 Mysql 或者 Elasticsearch 等。因为 Mysql 持久化太常见了，所以在这里我们选择 Elasticsearch（然而同样很常见）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/01.jpg">
+<meta property="og:image" content="https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/04.jpg">
+<meta property="og:image" content="https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/02.jpg">
+<meta property="og:image" content="https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/03.jpg">
+<meta property="article:published_time" content="2019-09-18T04:15:51.000Z">
+<meta property="article:modified_time" content="2021-07-20T22:29:57.835Z">
+<meta property="article:author" content="maozhijie">
+<meta property="article:tag" content="Elasticsearch">
+<meta property="article:tag" content="RabbitMQ">
+<meta property="article:tag" content="Zipkin">
+<meta property="article:tag" content="Spring Cloud Sleuth">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/01.jpg">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/avatar.png">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/avatar.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar.png">
+          
+        
+    
+    <!-- title -->
+    <title>监控中心-Elasticsearch+Zipkin</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="FutureNotFound" type="application/atom+xml" />
+    
+    
+      <script>
+          (function(d) {
+            var config = {
+              kitId: 'twa1wya',
+              scriptTimeout: 3000,
+              async: true
+            },
+            h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+          })(document);
+      </script>
+    
+    <!-- Google Adsense -->
+    
+            <script data-ad-client="ca-pub-8520855660949547" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/09/18/Spring-Cloud-Greenwich-SR2-9/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/09/17/Spring-Cloud-Greenwich-SR2-7/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="toc-div" class="toc-article" >
+        
+          <div id="toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%B9%B6%E5%90%AF%E5%8A%A8-Elasticsearch"><span class="toc-number">1.</span> <span class="toc-text">下载并启动 Elasticsearch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E5%90%AF-Zipkin"><span class="toc-number">2.</span> <span class="toc-text">重启 Zipkin</span></a></li></ol>
+          </div>
+        
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        
+    <h1 class="posttitle" itemprop="name headline">
+        监控中心-Elasticsearch+Zipkin
+    </h1>
+
+
+
+        <div class="meta">
+            
+    <div class="postdate">
+      
+        <time datetime="2019-09-18T04:15:51.000Z" itemprop="datePublished">2019-09-18</time>
+        
+      
+    </div>
+
+
+            
+    <div class="article-category">
+<!--        <i class="fas fa-archive"></i>-->
+        <a class="category-link" href="/categories/Java/">Java</a> › <a class="category-link" href="/categories/Java/Spring/">Spring</a> › <a class="category-link" href="/categories/Java/Spring/Spring-Cloud/">Spring Cloud</a>
+    </div>
+
+
+            
+    <div class="article-tag">
+<!--        <i class="fas fa-tag"></i>-->
+        <a class="tag-link-link" href="/tags/Elasticsearch/" rel="tag">Elasticsearch</a>, <a class="tag-link-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a>, <a class="tag-link-link" href="/tags/Spring-Cloud-Sleuth/" rel="tag">Spring Cloud Sleuth</a>, <a class="tag-link-link" href="/tags/Zipkin/" rel="tag">Zipkin</a>
+    </div>
+
+
+            
+    <div class="article-count">
+        <span id="/2019/09/18/Spring-Cloud-Greenwich-SR2-8/" class="leancloud_visitors" data-flag-title="监控中心-Elasticsearch+Zipkin">
+            <span class="post-meta-item-text">浏览量</span>
+            <span class="leancloud-visitors-count">0</span>
+        </span>
+    </div>
+
+            
+    <div class="wordcount-symbols">
+      
+        <span>字数</span>
+        <span>1.2k</span>
+      
+    </div>
+    <div class="wordcount-time">
+      
+        <span>阅读时间</span>
+        <span>2 分钟</span>
+      
+    </div>
+
+
+        </div>
+    </header>
+    
+
+    <div class="content" itemprop="articleBody">
+        
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">目录</strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%B9%B6%E5%90%AF%E5%8A%A8-Elasticsearch"><span class="toc-number">1.</span> <span class="toc-text">下载并启动 Elasticsearch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E5%90%AF-Zipkin"><span class="toc-number">2.</span> <span class="toc-text">重启 Zipkin</span></a></li></ol>
+        </div>
+    </div>
+
+<hr/>
+        <p>上一章虽然收集到了日志信息，但是在 Zipkin 重启之后收集到的日志会直接消失。<br>所以我们需要将日志信息进行持久化，这样 Zipkin 会从持久化仓库里面去取日志。可选的组件是 Mysql 或者 Elasticsearch 等。因为 Mysql 持久化太常见了，所以在这里我们选择 Elasticsearch（<del>然而同样很常见</del>）。</p>
+<span id="more"></span>
+
+<p>Elasticsearch 官网对 Elasticsearch 描述如下：</p>
+<blockquote>
+<p>Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。<br>通过 Elasticsearch，您能够执行及合并多种类型的搜索（结构化数据、非结构化数据、地理位置、指标），搜索方式随心而变。先从一个简单的问题出发，试试看能够从中发现些什么。找到与查询最匹配的 10 个文档是一回事。但如果面对的是十亿行日志，又该如何解读呢？Elasticsearch 聚合让您能够从大处着眼，探索数据的趋势和模式。</p>
+</blockquote>
+<p>简单来讲可以当作一个分布式的<strong>数据库</strong>来使用。</p>
+<h2 id="下载并启动-Elasticsearch"><a href="#下载并启动-Elasticsearch" class="headerlink" title="下载并启动 Elasticsearch"></a>下载并启动 Elasticsearch</h2><p>访问<a target="_blank" rel="noopener" href="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.4.3.zip">https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.4.3.zip</a>下载 6.4.3 版的 Elasticsearch 并解压（Zipkin 不支持 7 及以上版本的 ElasticSearch，所以这里选用我们熟悉的 6.4.3 版）。</p>
+<p>在 bin 目录下双击 elasticsearch.bat 启动 ElasticSearch，然后使用 Chrome 的<a target="_blank" rel="noopener" href="https://chrome.google.com/webstore/detail/ffmkiejjmecolpfloofpjologoblkegm">ElasticSearch Head</a>扩展查看 ElasticSearch<strong>索引</strong>：<br><img src="01.jpg" alt="01.jpg"><br>可以看到并没有<strong>索引</strong>存在。</p>
+<h2 id="重启-Zipkin"><a href="#重启-Zipkin" class="headerlink" title="重启 Zipkin"></a>重启 Zipkin</h2><p>依旧使用之前的 zipkin.jar 包，运行启动命令<code>java -jar zipkin.jar --zipkin.collector.rabbitmq.uri=amqp://guest:guest@localhost:5672 --STORAGE_TYPE=elasticsearch --ES_HOSTS=http://localhost:9200</code>。<br>其中 STORAGE_TYPE=elasticsearch 表明持久化组件是 ElasticSearch，ES_HOSTS 是 ElasticSearch 的通讯地址。<br>然后像之前一样用 Postman 请求<a target="_blank" rel="noopener" href="http://localhost:8030/feign/port/%F0%9F%90%95">http://localhost:8030/feign/port/🐕</a>，然后访问<a target="_blank" rel="noopener" href="http://localhost:9411/zipkin/">http://localhost:9411/zipkin/</a>，点击主页的<strong>查看</strong>按钮会显示已经统计到的日志列表：<br><img src="04.jpg" alt="02.jpg"><br>可以看到请求的链路日志已经统计在 Zipkin 里面了。<br>再查看 ElasticSearch<strong>索引</strong>：<br><img src="02.jpg" alt="04.jpg"><br>可以看到 ElasticSearch 的 Zipkin<strong>索引</strong>已经建立，查看<strong>数据浏览</strong>：<br><img src="03.jpg" alt="05.jpg"><br>可以看到<strong>数据浏览</strong>里面存的就是日志数据。<br>重启 Zipkin 服务可以看到请求的链路日志也并未丢失，也就是说日志持久化也 ok 了。<br><em>至于日志的分类和检索，请自行完成。</em></p>
+
+        
+    <blockquote>
+<p>本文是maozhijie的原创文章，转载请提前告知作者并且标明出处。<br>内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a> 协议。</p>
+</blockquote>
+
+
+    </div>
+    
+    <div class="donate">
+        <hr/>
+        <button class="donates-btn" onclick="show_donates()">打赏</button>
+        <div class="donate-imgs">
+            
+                <img class="donate-img" src="/images/wechat.jpg" alt="微信打赏"/>
+            
+            
+                <img class="donate-img" src="/images/alipay.jpg" alt="支付宝打赏"/>
+            
+        </div>
+        <script type="text/javascript">
+            function show_donates() {
+                $(".donate-imgs").show();
+                $(".donate-imgs").css("display", "flex");
+                $(".donates-btn").hide();
+            }
+        </script>
+    </div>
+
+</article>
+
+    <hr/>
+    <div class="post-series"><b>系列文章</b> #Spring Cloud
+        
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/25/Spring-Cloud-Greenwich-SR2-0/">
+                        (1)前言
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/25/Spring-Cloud-Greenwich-SR2-1/">
+                        (2)注册中心-Eureka
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/25/Spring-Cloud-Greenwich-SR2-2/">
+                        (3)服务间调用-Feign(🐦)
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/25/Spring-Cloud-Greenwich-SR2-3/">
+                        (4)路由中心-Gateway
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/08/05/Spring-Cloud-Greenwich-SR2-4/">
+                        (5)配置中心-Config
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/08/05/Spring-Cloud-Greenwich-SR2-5/">
+                        (6)配置中心-Bus
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/08/28/Spring-Cloud-Greenwich-SR2-6/">
+                        (7)监控中心-Admin
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/09/17/Spring-Cloud-Greenwich-SR2-7/">
+                        (8)监控中心-Sleuth+Zipkin
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/09/18/Spring-Cloud-Greenwich-SR2-8/">
+                        (9)监控中心-Elasticsearch+Zipkin
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/09/18/Spring-Cloud-Greenwich-SR2-9/">
+                        (10)监控中心-HystrixDashboard+Turbine
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/10/18/Spring-Cloud-Greenwich-SR2-10/">
+                        (11)授权中心-Oauth2+JWT
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/10/23/Spring-Cloud-Greenwich-SR2-11/">
+                        (12)注册中心/配置中心-Nacos
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/11/13/Spring-Cloud-Greenwich-SR2-12/">
+                        (13)动态路由-Gateway
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2020/01/09/Spring-Cloud-Greenwich-SR2-14/">
+                        (14)授权中心-Oauth2+JWT补全
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2020/02/26/Spring-Cloud-Greenwich-SR2-15/">
+                        (15)授权中心-Oauth2+JWT+HOTP(🐦)
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+
+<div class="pagination-index">
+    
+        <hr/>
+        
+            <a style="float:left;" href="/2019/09/18/Spring-Cloud-Greenwich-SR2-9/"><i class="fas fa-angle-left"></i>监控中心-HystrixDashboard+Turbine
+            </a>
+        
+        
+            <a style="float:right;" href="/2019/09/17/Spring-Cloud-Greenwich-SR2-7/">监控中心-Sleuth+Zipkin<i class="fas fa-angle-right"></i>
+            </a>
+        
+    
+</div>
+
+    <hr/>
+    <button class="blog-post-comments-btn" onclick="show_posts_comments()">显示评论</button>
+    <div class="blog-post-comments" style="display: none">
+        <div id="valine_comments"></div>
+    </div>
+    <script type="text/javascript">
+        function show_posts_comments() {
+            $(".blog-post-comments").show();
+            $(".blog-post-comments-btn").hide();
+        }
+    </script>
+    <hr/>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%B9%B6%E5%90%AF%E5%8A%A8-Elasticsearch"><span class="toc-number">1.</span> <span class="toc-text">下载并启动 Elasticsearch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E5%90%AF-Zipkin"><span class="toc-number">2.</span> <span class="toc-text">重启 Zipkin</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/&text=监控中心-Elasticsearch+Zipkin"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/&title=监控中心-Elasticsearch+Zipkin"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/&is_video=false&description=监控中心-Elasticsearch+Zipkin"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=监控中心-Elasticsearch+Zipkin&body=Check out this article: https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/&title=监控中心-Elasticsearch+Zipkin"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/&title=监控中心-Elasticsearch+Zipkin"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/&title=监控中心-Elasticsearch+Zipkin"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/&title=监控中心-Elasticsearch+Zipkin"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/&name=监控中心-Elasticsearch+Zipkin&description=&lt;p&gt;上一章虽然收集到了日志信息，但是在 Zipkin 重启之后收集到的日志会直接消失。&lt;br&gt;所以我们需要将日志信息进行持久化，这样 Zipkin 会从持久化仓库里面去取日志。可选的组件是 Mysql 或者 Elasticsearch 等。因为 Mysql 持久化太常见了，所以在这里我们选择 Elasticsearch（&lt;del&gt;然而同样很常见&lt;/del&gt;）。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://blog.futurenotfound.top/2019/09/18/Spring-Cloud-Greenwich-SR2-8/&t=监控中心-Elasticsearch+Zipkin"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer"style="display: none">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+<!--        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>-->
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer-extend">
+  <div class="footer-left">
+    &copy;
+    
+    
+    2021
+    maozhijie
+    
+      <a target="_blank" rel="noopener" href='https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh'>CC BY-NC-SA 4.0</a>
+    
+    Powered by
+    <a href="https://hexo.io/" target="_blank" rel="nofollow">hexo</a
+  </div>
+</footer>
+<footer id="footer">
+  <div class="footer-left">
+    
+      <a target="_blank" rel="noopener" href='http://beian.miit.gov.cn/'>陕ICP备2021008394号-1</a>
+      
+    
+		 	<a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61011302001259">陕公网安备 61011302001259号</a>
+    
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/friends/">友链</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // copy-btn HTML
+            var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+            btn += '<i class="far fa-clone"></i>';
+            btn += '</span>';
+            // mount it!
+            $(".highlight table").before(btn);
+            var clip = new ClipboardJS('.btn-copy', {
+                text: function (trigger) {
+                    return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str, it) => str + it.innerText + '\n', '')
+                }
+            });
+            clip.on('success', function (e) {
+                e.trigger.setAttribute('aria-label', "复制成功!");
+                e.clearSelection();
+            })
+        })
+    </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?f01b82d682e8b8c168d7e14cb993e170";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+<!-- Valine Comments -->
+
+    
+<script src="/lib/valine/Valine.min.js"></script>
+
+    <script type="text/javascript">
+        new Valine({
+            el: '#valine_comments',
+            appId: 'PYGSxQwogW3Qi5wie5gbK6tt-gzGzoHsz',
+            appKey: 'VgamBFH9CKcnxsD6oM4Ijm0n',
+            placeholder: '想对作者说点什么？',
+            avatar: 'identicon',
+            pageSize: '8',
+            lang: 'zh-cn',
+            visitor: 'true',
+            recordIP: 'true',
+            enableQQ: 'true',
+            meta: ['nick', 'mail', 'link'],
+            requiredFields: ['nick', 'mail'],
+        });
+    </script>
+
+</body>
+</html>

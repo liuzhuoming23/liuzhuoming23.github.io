@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="运行环境     version    Windows 10 1903(18362.239)   Docker 2.0.0.3 (31259)   IntelliJ IDEA 2019.1 (Ultimate Edition)   JDK openjdk:8-jre-alpine">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IntelliJ IDEA集成Docker插件">
+<meta property="og:url" content="https://blog.futurenotfound.top/2019/07/12/Docker_Idea/index.html">
+<meta property="og:site_name" content="FutureNotFound">
+<meta property="og:description" content="运行环境     version    Windows 10 1903(18362.239)   Docker 2.0.0.3 (31259)   IntelliJ IDEA 2019.1 (Ultimate Edition)   JDK openjdk:8-jre-alpine">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-07-12T04:16:44.000Z">
+<meta property="article:modified_time" content="2021-07-20T22:29:57.819Z">
+<meta property="article:author" content="maozhijie">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Spring Boot">
+<meta property="article:tag" content="IntelliJ IDEA">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/avatar.png">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/avatar.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar.png">
+          
+        
+    
+    <!-- title -->
+    <title>IntelliJ IDEA集成Docker插件</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="FutureNotFound" type="application/atom+xml" />
+    
+    
+      <script>
+          (function(d) {
+            var config = {
+              kitId: 'twa1wya',
+              scriptTimeout: 3000,
+              async: true
+            },
+            h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+          })(document);
+      </script>
+    
+    <!-- Google Adsense -->
+    
+            <script data-ad-client="ca-pub-8520855660949547" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/07/16/bloom-filter/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/07/09/Elasticsearch/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="toc-div" class="toc-article" >
+        
+          <div id="toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-integration"><span class="toc-number">1.</span> <span class="toc-text">Docker integration</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="toc-number">1.1.</span> <span class="toc-text">前期准备</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IDEA-%E8%BF%9E%E6%8E%A5%E6%9C%AC%E5%9C%B0-Docker"><span class="toc-number">1.1.1.</span> <span class="toc-text">IDEA 连接本地 Docker</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IDEA%EF%BC%8CDockerfile-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.2.</span> <span class="toc-text">IDEA，Dockerfile 配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#IDEA-Dockerfile-%E8%AE%BE%E7%BD%AE"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">IDEA Dockerfile 设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Dockerfile-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">Dockerfile 配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#pom-xml-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.2.3.</span> <span class="toc-text">pom.xml 配置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8-Dockerfile-%E6%9E%84%E5%BB%BA%E9%95%9C%E5%83%8F"><span class="toc-number">1.2.</span> <span class="toc-text">利用 Dockerfile 构建镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8-Dockerfile-%E8%BF%90%E8%A1%8C%E5%AE%B9%E5%99%A8"><span class="toc-number">1.3.</span> <span class="toc-text">利用 Dockerfile 运行容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E9%80%81%E9%95%9C%E5%83%8F%E5%88%B0%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93"><span class="toc-number">1.4.</span> <span class="toc-text">推送镜像到远程仓库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dockerfile-maven-plugin"><span class="toc-number">2.</span> <span class="toc-text">dockerfile-maven-plugin</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-maven-plugin"><span class="toc-number">3.</span> <span class="toc-text">docker-maven-plugin</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81-git-%E4%BB%93%E5%BA%93"><span class="toc-number">4.</span> <span class="toc-text">代码 git 仓库</span></a></li></ol>
+          </div>
+        
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        
+    <h1 class="posttitle" itemprop="name headline">
+        IntelliJ IDEA集成Docker插件
+    </h1>
+
+
+
+        <div class="meta">
+            
+    <div class="postdate">
+      
+        <time datetime="2019-07-12T04:16:44.000Z" itemprop="datePublished">2019-07-12</time>
+        
+      
+    </div>
+
+
+            
+    <div class="article-category">
+<!--        <i class="fas fa-archive"></i>-->
+        <a class="category-link" href="/categories/Tool/">Tool</a> › <a class="category-link" href="/categories/Tool/Docker/">Docker</a>
+    </div>
+
+
+            
+    <div class="article-tag">
+<!--        <i class="fas fa-tag"></i>-->
+        <a class="tag-link-link" href="/tags/Docker/" rel="tag">Docker</a>, <a class="tag-link-link" href="/tags/IntelliJ-IDEA/" rel="tag">IntelliJ IDEA</a>, <a class="tag-link-link" href="/tags/Spring-Boot/" rel="tag">Spring Boot</a>
+    </div>
+
+
+            
+    <div class="article-count">
+        <span id="/2019/07/12/Docker_Idea/" class="leancloud_visitors" data-flag-title="IntelliJ IDEA集成Docker插件">
+            <span class="post-meta-item-text">浏览量</span>
+            <span class="leancloud-visitors-count">0</span>
+        </span>
+    </div>
+
+            
+    <div class="wordcount-symbols">
+      
+        <span>字数</span>
+        <span>6.7k</span>
+      
+    </div>
+    <div class="wordcount-time">
+      
+        <span>阅读时间</span>
+        <span>12 分钟</span>
+      
+    </div>
+
+
+        </div>
+    </header>
+    
+
+    <div class="content" itemprop="articleBody">
+        
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">目录</strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-integration"><span class="toc-number">1.</span> <span class="toc-text">Docker integration</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="toc-number">1.1.</span> <span class="toc-text">前期准备</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IDEA-%E8%BF%9E%E6%8E%A5%E6%9C%AC%E5%9C%B0-Docker"><span class="toc-number">1.1.1.</span> <span class="toc-text">IDEA 连接本地 Docker</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IDEA%EF%BC%8CDockerfile-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.2.</span> <span class="toc-text">IDEA，Dockerfile 配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#IDEA-Dockerfile-%E8%AE%BE%E7%BD%AE"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">IDEA Dockerfile 设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Dockerfile-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">Dockerfile 配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#pom-xml-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.2.3.</span> <span class="toc-text">pom.xml 配置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8-Dockerfile-%E6%9E%84%E5%BB%BA%E9%95%9C%E5%83%8F"><span class="toc-number">1.2.</span> <span class="toc-text">利用 Dockerfile 构建镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8-Dockerfile-%E8%BF%90%E8%A1%8C%E5%AE%B9%E5%99%A8"><span class="toc-number">1.3.</span> <span class="toc-text">利用 Dockerfile 运行容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E9%80%81%E9%95%9C%E5%83%8F%E5%88%B0%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93"><span class="toc-number">1.4.</span> <span class="toc-text">推送镜像到远程仓库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dockerfile-maven-plugin"><span class="toc-number">2.</span> <span class="toc-text">dockerfile-maven-plugin</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-maven-plugin"><span class="toc-number">3.</span> <span class="toc-text">docker-maven-plugin</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81-git-%E4%BB%93%E5%BA%93"><span class="toc-number">4.</span> <span class="toc-text">代码 git 仓库</span></a></li></ol>
+        </div>
+    </div>
+
+<hr/>
+        <p>运行环境</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>version</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Windows 10</td>
+<td>1903(18362.239)</td>
+</tr>
+<tr>
+<td>Docker</td>
+<td>2.0.0.3 (31259)</td>
+</tr>
+<tr>
+<td>IntelliJ IDEA</td>
+<td>2019.1 (Ultimate Edition)</td>
+</tr>
+<tr>
+<td>JDK</td>
+<td>openjdk:8-jre-alpine</td>
+</tr>
+</tbody></table>
+<span id="more"></span>
+
+<h2 id="Docker-integration"><a href="#Docker-integration" class="headerlink" title="Docker integration"></a>Docker integration</h2><p>IDEA 在 2018.1 之后某个版本里已经把 Docker integration 集成到默认插件里，所以不需要手动下载安装。如果 IDEA 为之前版本，可以在<code>菜单栏-File-Settings-Plugins</code>里面搜索<code>Docker integration</code>并安装重启 IDEA。<br><strong>部分 xml 有所省略。</strong></p>
+<h3 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h3><h4 id="IDEA-连接本地-Docker"><a href="#IDEA-连接本地-Docker" class="headerlink" title="IDEA 连接本地 Docker"></a>IDEA 连接本地 Docker</h4><ul>
+<li>在 Docker 的<code>Settings-General</code>设置<code>Expose daemon on tcp://localhost:2375 whthout TLS</code>为选中</li>
+<li>在<code>菜单栏-File-Settings-Build, Execution, Deployment-Docker</code>里面新增 Docker 来凝结配置并设置<code>TCP socket</code>选项内的<code>Engine API URL</code>为<code>tcp://localhost:2375</code>（默认值）</li>
+</ul>
+<h4 id="IDEA，Dockerfile-配置"><a href="#IDEA，Dockerfile-配置" class="headerlink" title="IDEA，Dockerfile 配置"></a>IDEA，Dockerfile 配置</h4><h5 id="IDEA-Dockerfile-设置"><a href="#IDEA-Dockerfile-设置" class="headerlink" title="IDEA Dockerfile 设置"></a>IDEA Dockerfile 设置</h5><ul>
+<li>查看 IDEA 下方的<code>Toolbar</code>有没有<code>Docker</code>的功能标签,如果没有<code>Docker</code>功能标签，在<code>菜单栏-View-Tool Windows-Docker</code>手动打开</li>
+<li>在<code>运行设置</code>里面新增配置<code>Dockerfile设置</code>，<code>Dockerfile设置</code>需要设置的基础参数为<code>Image tag</code>（镜像标签（名称）），<code>Container name</code>（容器名称），<code>Bind ports</code>（映射端口）<ul>
+<li><code>映射端口</code>设置方式为：<code>Host port</code>为请求需要的端口号（本机），<code>Container port</code>为容器里面项目开启的端口（虚拟机，需要和项目里面的<code>application.yml</code>配置的<code>server.port</code>端口一致）</li>
+</ul>
+</li>
+</ul>
+<h5 id="Dockerfile-配置"><a href="#Dockerfile-配置" class="headerlink" title="Dockerfile 配置"></a>Dockerfile 配置</h5><p>在项目根目录创建 Dockerfile 文件（无后缀名）:</p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment">#指定基础镜像，在其上进行定制</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">8</span>-jre-alpine</span><br><span class="line"><span class="comment">#维护者信息</span></span><br><span class="line"><span class="keyword">MAINTAINER</span> liuzhuoming &lt;liuzhuoming23@live.com&gt;</span><br><span class="line"><span class="comment">#设置时区为上海</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk add tzdata \</span></span><br><span class="line"><span class="bash">    &amp;&amp; cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \</span></span><br><span class="line"><span class="bash">    &amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;Asia/Shanghai&quot;</span> &gt;/etc/timezone \</span></span><br><span class="line"><span class="bash">    &amp;&amp; apk del tzdata</span></span><br><span class="line"><span class="comment">#这里的/tmp目录就会在运行时自动挂载为匿名卷，任何向/tmp中写入的信息都不会记录进容器存储层</span></span><br><span class="line"><span class="keyword">VOLUME</span><span class="bash"> /tmp</span></span><br><span class="line"><span class="comment">#复制上下文目录下的target/weekly-report.jar到容器里</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> target/weekly-report.jar weekly-report.jar</span></span><br><span class="line"><span class="comment">#声明运行时容器提供服务端口，这只是一个声明，在运行时并不会因为这个声明应用就会开启这个端口的服务</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8076</span></span><br><span class="line"><span class="comment">#指定容器启动程序及参数</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="bash"> [<span class="string">&quot;java&quot;</span>,<span class="string">&quot;-jar&quot;</span>,<span class="string">&quot;weekly-report.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="pom-xml-配置"><a href="#pom-xml-配置" class="headerlink" title="pom.xml 配置"></a>pom.xml 配置</h5><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">packaging</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>weekly-report<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">finalName</span>&gt;</span>$&#123;project.artifactId&#125;<span class="tag">&lt;/<span class="name">finalName</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="利用-Dockerfile-构建镜像"><a href="#利用-Dockerfile-构建镜像" class="headerlink" title="利用 Dockerfile 构建镜像"></a>利用 Dockerfile 构建镜像</h3><ul>
+<li>用 maven 打包项目，并生成 jar 文件（注意 jar 文件名称和上面<code>Dockerfile</code>文件里面<code>target/weekly-report.jar</code>文件名称一致）</li>
+<li>打开 Dockerfile 文件并点击<code>Build Image for &#39;Dockerfile&#39;</code>，等待直到控制台输出编译成功日志，并在 Docker 的 Images 新增了一个名为<code>liuzhuoming23/weekly-report:latest</code>的镜像，证明镜像构建成功</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Successfully built 905d3cc4a895</span><br><span class="line"></span><br><span class="line">Successfully tagged liuzhuoming23/weekly-report:latest</span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;liuzhuoming23/weekly-report Dockerfile: Dockerfile&#x27;</span> has been deployed successfully.</span><br></pre></td></tr></table></figure>
+
+<h3 id="利用-Dockerfile-运行容器"><a href="#利用-Dockerfile-运行容器" class="headerlink" title="利用 Dockerfile 运行容器"></a>利用 Dockerfile 运行容器</h3><ul>
+<li>用 maven 打包项目，并生成 jar 文件（同上<code>利用Dockerfile构建镜像</code>）</li>
+<li>打开 Dockerfile 文件并点击<code>Run &#39;Dockerfile&#39;</code>，可以看到构建镜像之后项目直接在 docker 里面开始打印运行日志</li>
+<li>在浏览器输入<code>http://localhost:18080/weekly-report/</code>（这里的端口号和上面在<code>IDEA Dockerfile设置-端口设置-Host port</code>里面的配置一致），就可以看见项目已经运行起来了</li>
+</ul>
+<h3 id="推送镜像到远程仓库"><a href="#推送镜像到远程仓库" class="headerlink" title="推送镜像到远程仓库"></a>推送镜像到远程仓库</h3><p>在生成的镜像上面右键并选择<code>Push Image...</code>，配置并选择自己的 Docker 远程仓库地址和镜像 tag（个人理解就是镜像名称）就可以了，不过因为这边没有 Docker 远程仓库，所以并没有实际尝试。</p>
+<h2 id="dockerfile-maven-plugin"><a href="#dockerfile-maven-plugin" class="headerlink" title="dockerfile-maven-plugin"></a>dockerfile-maven-plugin</h2><p>本节代码基于上节<code>Docker integration</code>基础上进行修改。<br>修改部分 pom.xml 配置</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">docker.image.prefix</span>&gt;</span>weekly-report<span class="tag">&lt;/<span class="name">docker.image.prefix</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line">...</span><br><span class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--&lt;plugin&gt;</span></span><br><span class="line"><span class="comment">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span></span><br><span class="line"><span class="comment">            &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</span></span><br><span class="line"><span class="comment">        &lt;/plugin&gt;--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.spotify<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>dockerfile-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.4.10<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">repository</span>&gt;</span>$&#123;docker.image.prefix&#125;/$&#123;project.artifactId&#125;<span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">buildArgs</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">JAR_FILE</span>&gt;</span>target/$&#123;project.build.finalName&#125;.jar<span class="tag">&lt;/<span class="name">JAR_FILE</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">buildArgs</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">finalName</span>&gt;</span>$&#123;project.artifactId&#125;<span class="tag">&lt;/<span class="name">finalName</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>然后在 maven 命令运行<code>clean package dockerfile:build -DskipTests</code>就可以快速生成镜像并自动发布到远程仓库。<br>优点大概是省略了配置 IDEA-Dockerfile 设置的时间。</p>
+<h2 id="docker-maven-plugin"><a href="#docker-maven-plugin" class="headerlink" title="docker-maven-plugin"></a>docker-maven-plugin</h2><p>本节代码基于上节<code>dockerfile-maven-plugin</code>基础上进行修改。</p>
+<blockquote>
+<p><code>docker-maven-plugin</code>和<code>dockerfile-maven-plugin</code>的关系大概就是<code>dockerfile-maven-plugin</code>要写 Dockerfile 文件，而<code>docker-maven-plugin</code>不需要（其实只是换个地方写 Dockerfile 文件的配置，工作总量并没有减少甚至因为 xml 的语法限制等配置还更显得繁琐，而且似乎停止维护了，所以还是建议使用<code>dockerfile-maven-plugin</code>）</p>
+</blockquote>
+<p>删除项目根目录下面的 Dockerfile 文件，并修改部分 pom.xml 配置</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--&lt;plugin&gt;</span></span><br><span class="line"><span class="comment">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span></span><br><span class="line"><span class="comment">            &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</span></span><br><span class="line"><span class="comment">        &lt;/plugin&gt;</span></span><br><span class="line"><span class="comment">        &lt;plugin&gt;</span></span><br><span class="line"><span class="comment">            &lt;groupId&gt;com.spotify&lt;/groupId&gt;</span></span><br><span class="line"><span class="comment">            &lt;artifactId&gt;dockerfile-maven-plugin&lt;/artifactId&gt;</span></span><br><span class="line"><span class="comment">            &lt;version&gt;1.4.10&lt;/version&gt;</span></span><br><span class="line"><span class="comment">            &lt;configuration&gt;</span></span><br><span class="line"><span class="comment">                &lt;repository&gt;$&#123;docker.image.prefix&#125;/$&#123;project.artifactId&#125;&lt;/repository&gt;</span></span><br><span class="line"><span class="comment">                &lt;buildArgs&gt;</span></span><br><span class="line"><span class="comment">                    &lt;JAR_FILE&gt;target/$&#123;project.build.finalName&#125;.jar&lt;/JAR_FILE&gt;</span></span><br><span class="line"><span class="comment">                &lt;/buildArgs&gt;</span></span><br><span class="line"><span class="comment">            &lt;/configuration&gt;</span></span><br><span class="line"><span class="comment">        &lt;/plugin&gt;--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.spotify<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>docker-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">imageName</span>&gt;</span>$&#123;docker.image.prefix&#125;/$&#123;project.artifactId&#125;<span class="tag">&lt;/<span class="name">imageName</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 指定基础镜像，在其上进行定制 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">baseImage</span>&gt;</span>openjdk:8-jre-alpine<span class="tag">&lt;/<span class="name">baseImage</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 维护者信息 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">maintainer</span>&gt;</span></span><br><span class="line">                    liuzhuoming</span><br><span class="line">                <span class="tag">&lt;/<span class="name">maintainer</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 设置时区为上海 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">runs</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">run</span>&gt;</span></span><br><span class="line">                        <span class="comment">&lt;!-- xml里面的&amp;&amp;需要用&lt;![CDATA[]]&gt;包括，不然打包会报错 --&gt;</span></span><br><span class="line">                        &lt;![CDATA[ apk add tzdata &amp;&amp; cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; echo &quot;Asia/Shanghai&quot; &gt;/etc/timezone &amp;&amp; apk del tzdata ]]&gt;</span><br><span class="line">                    <span class="tag">&lt;/<span class="name">run</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">runs</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 这种写多个&lt;run&gt;的方式是错误的，会产生多个层，平时在Dockerfile里面也尽量把所有RUN命令写在同一个RUN关键字下面用&amp;&amp;连接 --&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- &lt;runs&gt;</span></span><br><span class="line"><span class="comment">                    &lt;run&gt;</span></span><br><span class="line"><span class="comment">                        apk add tzdata</span></span><br><span class="line"><span class="comment">                    &lt;/run&gt;</span></span><br><span class="line"><span class="comment">                    &lt;run&gt;</span></span><br><span class="line"><span class="comment">                        cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span></span><br><span class="line"><span class="comment">                    &lt;/run&gt;</span></span><br><span class="line"><span class="comment">                    &lt;run&gt;</span></span><br><span class="line"><span class="comment">                        echo &quot;Asia/Shanghai&quot; &gt;/etc/timezone</span></span><br><span class="line"><span class="comment">                    &lt;/run&gt;</span></span><br><span class="line"><span class="comment">                    &lt;run&gt;</span></span><br><span class="line"><span class="comment">                        apk del tzdata</span></span><br><span class="line"><span class="comment">                    &lt;/run&gt;</span></span><br><span class="line"><span class="comment">                &lt;/runs&gt;--&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 这里的/tmp目录就会在运行时自动挂载为匿名卷，任何向/tmp中写入的信息都不会记录进容器存储层 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">volumes</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">volume</span>&gt;</span></span><br><span class="line">                        /tmp</span><br><span class="line">                    <span class="tag">&lt;/<span class="name">volume</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">volumes</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 声明运行时容器提供服务端口，这只是一个声明，在运行时并不会因为这个声明应用就会开启这个端口的服务 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">exposes</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">expose</span>&gt;</span>8076<span class="tag">&lt;/<span class="name">expose</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">exposes</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 指定容器启动程序及参数 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">entryPoint</span>&gt;</span>[&quot;java&quot;, &quot;-jar&quot;, &quot;/$&#123;project.build.finalName&#125;.jar&quot;]<span class="tag">&lt;/<span class="name">entryPoint</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">resources</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">resource</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">targetPath</span>&gt;</span>/<span class="tag">&lt;/<span class="name">targetPath</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">directory</span>&gt;</span>$&#123;project.build.directory&#125;<span class="tag">&lt;/<span class="name">directory</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">include</span>&gt;</span>$&#123;project.build.finalName&#125;.jar<span class="tag">&lt;/<span class="name">include</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">resource</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">resources</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">finalName</span>&gt;</span>$&#123;project.artifactId&#125;<span class="tag">&lt;/<span class="name">finalName</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>然后在 maven 命令运行<code>clean package docker:build -DskipTests</code>就可以快速生成镜像并自动发布到远程仓库。<br>优点大概是省略了配置 IDEA-Dockerfile 设置的时间。</p>
+<h2 id="代码-git-仓库"><a href="#代码-git-仓库" class="headerlink" title="代码 git 仓库"></a>代码 git 仓库</h2><p><a target="_blank" rel="noopener" href="https://github.com/maozhijie19/weekly-report.git">weekly-report | github</a></p>
+
+        
+    <blockquote>
+<p>本文是maozhijie的原创文章，转载请提前告知作者并且标明出处。<br>内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a> 协议。</p>
+</blockquote>
+
+
+    </div>
+    
+    <div class="donate">
+        <hr/>
+        <button class="donates-btn" onclick="show_donates()">打赏</button>
+        <div class="donate-imgs">
+            
+                <img class="donate-img" src="/images/wechat.jpg" alt="微信打赏"/>
+            
+            
+                <img class="donate-img" src="/images/alipay.jpg" alt="支付宝打赏"/>
+            
+        </div>
+        <script type="text/javascript">
+            function show_donates() {
+                $(".donate-imgs").show();
+                $(".donate-imgs").css("display", "flex");
+                $(".donates-btn").hide();
+            }
+        </script>
+    </div>
+
+</article>
+
+<div class="pagination-index">
+    
+        <hr/>
+        
+            <a style="float:left;" href="/2019/07/16/bloom-filter/"><i class="fas fa-angle-left"></i>Bloom filter（布隆过滤器）
+            </a>
+        
+        
+            <a style="float:right;" href="/2019/07/09/Elasticsearch/">Spring Boot集成Elasticsearch<i class="fas fa-angle-right"></i>
+            </a>
+        
+    
+</div>
+
+    <hr/>
+    <button class="blog-post-comments-btn" onclick="show_posts_comments()">显示评论</button>
+    <div class="blog-post-comments" style="display: none">
+        <div id="valine_comments"></div>
+    </div>
+    <script type="text/javascript">
+        function show_posts_comments() {
+            $(".blog-post-comments").show();
+            $(".blog-post-comments-btn").hide();
+        }
+    </script>
+    <hr/>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-integration"><span class="toc-number">1.</span> <span class="toc-text">Docker integration</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="toc-number">1.1.</span> <span class="toc-text">前期准备</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IDEA-%E8%BF%9E%E6%8E%A5%E6%9C%AC%E5%9C%B0-Docker"><span class="toc-number">1.1.1.</span> <span class="toc-text">IDEA 连接本地 Docker</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IDEA%EF%BC%8CDockerfile-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.2.</span> <span class="toc-text">IDEA，Dockerfile 配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#IDEA-Dockerfile-%E8%AE%BE%E7%BD%AE"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">IDEA Dockerfile 设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Dockerfile-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">Dockerfile 配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#pom-xml-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.2.3.</span> <span class="toc-text">pom.xml 配置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8-Dockerfile-%E6%9E%84%E5%BB%BA%E9%95%9C%E5%83%8F"><span class="toc-number">1.2.</span> <span class="toc-text">利用 Dockerfile 构建镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8-Dockerfile-%E8%BF%90%E8%A1%8C%E5%AE%B9%E5%99%A8"><span class="toc-number">1.3.</span> <span class="toc-text">利用 Dockerfile 运行容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E9%80%81%E9%95%9C%E5%83%8F%E5%88%B0%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93"><span class="toc-number">1.4.</span> <span class="toc-text">推送镜像到远程仓库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dockerfile-maven-plugin"><span class="toc-number">2.</span> <span class="toc-text">dockerfile-maven-plugin</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-maven-plugin"><span class="toc-number">3.</span> <span class="toc-text">docker-maven-plugin</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81-git-%E4%BB%93%E5%BA%93"><span class="toc-number">4.</span> <span class="toc-text">代码 git 仓库</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://blog.futurenotfound.top/2019/07/12/Docker_Idea/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://blog.futurenotfound.top/2019/07/12/Docker_Idea/&text=IntelliJ IDEA集成Docker插件"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://blog.futurenotfound.top/2019/07/12/Docker_Idea/&title=IntelliJ IDEA集成Docker插件"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://blog.futurenotfound.top/2019/07/12/Docker_Idea/&is_video=false&description=IntelliJ IDEA集成Docker插件"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=IntelliJ IDEA集成Docker插件&body=Check out this article: https://blog.futurenotfound.top/2019/07/12/Docker_Idea/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://blog.futurenotfound.top/2019/07/12/Docker_Idea/&title=IntelliJ IDEA集成Docker插件"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://blog.futurenotfound.top/2019/07/12/Docker_Idea/&title=IntelliJ IDEA集成Docker插件"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://blog.futurenotfound.top/2019/07/12/Docker_Idea/&title=IntelliJ IDEA集成Docker插件"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://blog.futurenotfound.top/2019/07/12/Docker_Idea/&title=IntelliJ IDEA集成Docker插件"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://blog.futurenotfound.top/2019/07/12/Docker_Idea/&name=IntelliJ IDEA集成Docker插件&description=&lt;p&gt;运行环境&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;version&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;td&gt;Windows 10&lt;/td&gt;
+&lt;td&gt;1903(18362.239)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Docker&lt;/td&gt;
+&lt;td&gt;2.0.0.3 (31259)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;IntelliJ IDEA&lt;/td&gt;
+&lt;td&gt;2019.1 (Ultimate Edition)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;JDK&lt;/td&gt;
+&lt;td&gt;openjdk:8-jre-alpine&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://blog.futurenotfound.top/2019/07/12/Docker_Idea/&t=IntelliJ IDEA集成Docker插件"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer"style="display: none">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+<!--        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>-->
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer-extend">
+  <div class="footer-left">
+    &copy;
+    
+    
+    2021
+    maozhijie
+    
+      <a target="_blank" rel="noopener" href='https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh'>CC BY-NC-SA 4.0</a>
+    
+    Powered by
+    <a href="https://hexo.io/" target="_blank" rel="nofollow">hexo</a
+  </div>
+</footer>
+<footer id="footer">
+  <div class="footer-left">
+    
+      <a target="_blank" rel="noopener" href='http://beian.miit.gov.cn/'>陕ICP备2021008394号-1</a>
+      
+    
+		 	<a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61011302001259">陕公网安备 61011302001259号</a>
+    
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/friends/">友链</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // copy-btn HTML
+            var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+            btn += '<i class="far fa-clone"></i>';
+            btn += '</span>';
+            // mount it!
+            $(".highlight table").before(btn);
+            var clip = new ClipboardJS('.btn-copy', {
+                text: function (trigger) {
+                    return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str, it) => str + it.innerText + '\n', '')
+                }
+            });
+            clip.on('success', function (e) {
+                e.trigger.setAttribute('aria-label', "复制成功!");
+                e.clearSelection();
+            })
+        })
+    </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?f01b82d682e8b8c168d7e14cb993e170";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+<!-- Valine Comments -->
+
+    
+<script src="/lib/valine/Valine.min.js"></script>
+
+    <script type="text/javascript">
+        new Valine({
+            el: '#valine_comments',
+            appId: 'PYGSxQwogW3Qi5wie5gbK6tt-gzGzoHsz',
+            appKey: 'VgamBFH9CKcnxsD6oM4Ijm0n',
+            placeholder: '想对作者说点什么？',
+            avatar: 'identicon',
+            pageSize: '8',
+            lang: 'zh-cn',
+            visitor: 'true',
+            recordIP: 'true',
+            enableQQ: 'true',
+            meta: ['nick', 'mail', 'link'],
+            requiredFields: ['nick', 'mail'],
+        });
+    </script>
+
+</body>
+</html>

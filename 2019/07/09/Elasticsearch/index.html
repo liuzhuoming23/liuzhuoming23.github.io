@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="spring-boot-starter-data-elasticsearch 目前最新版是 3.1.9.RELEASE，不支持 Elasticsearch（下文简称 ES）7.0.x，在下载了多个版本尝试之后，选择 ES6.4.3 版本； 以下操作均默认已开启 ES 和安装 IK 分词器并全部采用默认配置，默认已了解 ES 的索引的定义、作用以及索引和数据之间的映射关系； 无特殊说明的话，运行代">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Boot集成Elasticsearch">
+<meta property="og:url" content="https://blog.futurenotfound.top/2019/07/09/Elasticsearch/index.html">
+<meta property="og:site_name" content="FutureNotFound">
+<meta property="og:description" content="spring-boot-starter-data-elasticsearch 目前最新版是 3.1.9.RELEASE，不支持 Elasticsearch（下文简称 ES）7.0.x，在下载了多个版本尝试之后，选择 ES6.4.3 版本； 以下操作均默认已开启 ES 和安装 IK 分词器并全部采用默认配置，默认已了解 ES 的索引的定义、作用以及索引和数据之间的映射关系； 无特殊说明的话，运行代">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-07-09T06:10:12.000Z">
+<meta property="article:modified_time" content="2021-07-20T22:29:57.819Z">
+<meta property="article:author" content="maozhijie">
+<meta property="article:tag" content="Spring Boot">
+<meta property="article:tag" content="Elasticsearch">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/avatar.png">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/avatar.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar.png">
+          
+        
+    
+    <!-- title -->
+    <title>Spring Boot集成Elasticsearch</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="FutureNotFound" type="application/atom+xml" />
+    
+    
+      <script>
+          (function(d) {
+            var config = {
+              kitId: 'twa1wya',
+              scriptTimeout: 3000,
+              async: true
+            },
+            h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+          })(document);
+      </script>
+    
+    <!-- Google Adsense -->
+    
+            <script data-ad-client="ca-pub-8520855660949547" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/07/12/Docker_Idea/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2018/10/05/Mysql%E6%B8%B8%E6%A0%87%E7%9A%84%E5%AE%8C%EF%BC%88jian%EF%BC%89%E6%95%B4%EF%BC%88dan%EF%BC%89%E4%BD%BF%E7%94%A8/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="toc-div" class="toc-article" >
+        
+          <div id="toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">版本信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9-pom-xml"><span class="toc-number">2.</span> <span class="toc-text">修改 pom.xml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9-application-yml"><span class="toc-number">3.</span> <span class="toc-text">修改 application.yml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%98%A0%E5%B0%84%E5%AE%9E%E4%BD%93%E7%B1%BB"><span class="toc-number">4.</span> <span class="toc-text">创建映射实体类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-service-%E6%8E%A5%E5%8F%A3"><span class="toc-number">5.</span> <span class="toc-text">创建 service 接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%B5%8B%E8%AF%95%E7%B1%BB"><span class="toc-number">6.</span> <span class="toc-text">创建测试类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES-%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-number">7.</span> <span class="toc-text">ES 基本操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E7%B4%A2%E5%BC%95"><span class="toc-number">7.1.</span> <span class="toc-text">添加索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E6%93%8D%E4%BD%9C"><span class="toc-number">7.2.</span> <span class="toc-text">数据增删改查操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A2%9E"><span class="toc-number">7.2.1.</span> <span class="toc-text">增</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0"><span class="toc-number">7.2.2.</span> <span class="toc-text">删</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%B9"><span class="toc-number">7.2.3.</span> <span class="toc-text">改</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5"><span class="toc-number">7.2.4.</span> <span class="toc-text">查</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%9F%A5%E8%AF%A2"><span class="toc-number">7.2.4.1.</span> <span class="toc-text">基础查询</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%9F%A5%E8%AF%A2%E6%8E%92%E5%BA%8F"><span class="toc-number">7.2.4.1.1.</span> <span class="toc-text">基础查询排序</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%9F%A5%E8%AF%A2%E5%88%86%E9%A1%B5"><span class="toc-number">7.2.4.1.2.</span> <span class="toc-text">基础查询分页</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#JPA-%E6%96%B9%E5%BC%8F%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%9E%84%E5%BB%BA"><span class="toc-number">7.2.4.2.</span> <span class="toc-text">JPA 方式的查询构建</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#JPA-%E6%96%B9%E5%BC%8F%E6%9F%A5%E8%AF%A2%E6%8E%92%E5%BA%8F"><span class="toc-number">7.2.4.2.1.</span> <span class="toc-text">JPA 方式查询排序</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#NativeSearchQueryBuilder-QueryBuilders-%E5%9F%BA%E7%A1%80%E6%9F%A5%E8%AF%A2%EF%BC%88termQuery%EF%BC%8CmatchQuery%EF%BC%8CfuzzyQuery%EF%BC%89"><span class="toc-number">7.2.4.3.</span> <span class="toc-text">NativeSearchQueryBuilder+QueryBuilders 基础查询（termQuery，matchQuery，fuzzyQuery）</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E4%B8%8D%E5%88%86%E8%AF%8D%E5%8C%B9%E9%85%8D"><span class="toc-number">7.2.4.3.1.</span> <span class="toc-text">查询条件不分词匹配</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%A4%9A%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E4%B8%8D%E5%88%86%E8%AF%8D%E5%8C%B9%E9%85%8D"><span class="toc-number">7.2.4.3.2.</span> <span class="toc-text">多查询条件不分词匹配</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E5%88%86%E8%AF%8D%E5%8C%B9%E9%85%8D"><span class="toc-number">7.2.4.3.3.</span> <span class="toc-text">查询条件分词匹配</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E5%88%86%E8%AF%8D%E5%8C%B9%E9%85%8D%E5%A4%9A%E5%AD%97%E6%AE%B5"><span class="toc-number">7.2.4.3.4.</span> <span class="toc-text">查询条件分词匹配多字段</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E6%A8%A1%E7%B3%8A%E5%8C%B9%E9%85%8D"><span class="toc-number">7.2.4.3.5.</span> <span class="toc-text">查询条件模糊匹配</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#NativeSearchQueryBuilder-QueryBuilders-%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2"><span class="toc-number">7.2.4.4.</span> <span class="toc-text">NativeSearchQueryBuilder + QueryBuilders 高级查询</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%9A%E5%90%88"><span class="toc-number">7.3.</span> <span class="toc-text">聚合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%9D%A5%E6%BA%90"><span class="toc-number">8.</span> <span class="toc-text">参考来源</span></a></li></ol>
+          </div>
+        
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        
+    <h1 class="posttitle" itemprop="name headline">
+        Spring Boot集成Elasticsearch
+    </h1>
+
+
+
+        <div class="meta">
+            
+    <div class="postdate">
+      
+        <time datetime="2019-07-09T06:10:12.000Z" itemprop="datePublished">2019-07-09</time>
+        
+      
+    </div>
+
+
+            
+    <div class="article-category">
+<!--        <i class="fas fa-archive"></i>-->
+        <a class="category-link" href="/categories/Tool/">Tool</a> › <a class="category-link" href="/categories/Tool/Elasticsearch/">Elasticsearch</a>
+    </div>
+
+
+            
+    <div class="article-tag">
+<!--        <i class="fas fa-tag"></i>-->
+        <a class="tag-link-link" href="/tags/Elasticsearch/" rel="tag">Elasticsearch</a>, <a class="tag-link-link" href="/tags/Spring-Boot/" rel="tag">Spring Boot</a>
+    </div>
+
+
+            
+    <div class="article-count">
+        <span id="/2019/07/09/Elasticsearch/" class="leancloud_visitors" data-flag-title="Spring Boot集成Elasticsearch">
+            <span class="post-meta-item-text">浏览量</span>
+            <span class="leancloud-visitors-count">0</span>
+        </span>
+    </div>
+
+            
+    <div class="wordcount-symbols">
+      
+        <span>字数</span>
+        <span>11k</span>
+      
+    </div>
+    <div class="wordcount-time">
+      
+        <span>阅读时间</span>
+        <span>21 分钟</span>
+      
+    </div>
+
+
+        </div>
+    </header>
+    
+
+    <div class="content" itemprop="articleBody">
+        
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">目录</strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">版本信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9-pom-xml"><span class="toc-number">2.</span> <span class="toc-text">修改 pom.xml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9-application-yml"><span class="toc-number">3.</span> <span class="toc-text">修改 application.yml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%98%A0%E5%B0%84%E5%AE%9E%E4%BD%93%E7%B1%BB"><span class="toc-number">4.</span> <span class="toc-text">创建映射实体类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-service-%E6%8E%A5%E5%8F%A3"><span class="toc-number">5.</span> <span class="toc-text">创建 service 接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%B5%8B%E8%AF%95%E7%B1%BB"><span class="toc-number">6.</span> <span class="toc-text">创建测试类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES-%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-number">7.</span> <span class="toc-text">ES 基本操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E7%B4%A2%E5%BC%95"><span class="toc-number">7.1.</span> <span class="toc-text">添加索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E6%93%8D%E4%BD%9C"><span class="toc-number">7.2.</span> <span class="toc-text">数据增删改查操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A2%9E"><span class="toc-number">7.2.1.</span> <span class="toc-text">增</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0"><span class="toc-number">7.2.2.</span> <span class="toc-text">删</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%B9"><span class="toc-number">7.2.3.</span> <span class="toc-text">改</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5"><span class="toc-number">7.2.4.</span> <span class="toc-text">查</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%9F%A5%E8%AF%A2"><span class="toc-number">7.2.4.1.</span> <span class="toc-text">基础查询</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%9F%A5%E8%AF%A2%E6%8E%92%E5%BA%8F"><span class="toc-number">7.2.4.1.1.</span> <span class="toc-text">基础查询排序</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%9F%A5%E8%AF%A2%E5%88%86%E9%A1%B5"><span class="toc-number">7.2.4.1.2.</span> <span class="toc-text">基础查询分页</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#JPA-%E6%96%B9%E5%BC%8F%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%9E%84%E5%BB%BA"><span class="toc-number">7.2.4.2.</span> <span class="toc-text">JPA 方式的查询构建</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#JPA-%E6%96%B9%E5%BC%8F%E6%9F%A5%E8%AF%A2%E6%8E%92%E5%BA%8F"><span class="toc-number">7.2.4.2.1.</span> <span class="toc-text">JPA 方式查询排序</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#NativeSearchQueryBuilder-QueryBuilders-%E5%9F%BA%E7%A1%80%E6%9F%A5%E8%AF%A2%EF%BC%88termQuery%EF%BC%8CmatchQuery%EF%BC%8CfuzzyQuery%EF%BC%89"><span class="toc-number">7.2.4.3.</span> <span class="toc-text">NativeSearchQueryBuilder+QueryBuilders 基础查询（termQuery，matchQuery，fuzzyQuery）</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E4%B8%8D%E5%88%86%E8%AF%8D%E5%8C%B9%E9%85%8D"><span class="toc-number">7.2.4.3.1.</span> <span class="toc-text">查询条件不分词匹配</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%A4%9A%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E4%B8%8D%E5%88%86%E8%AF%8D%E5%8C%B9%E9%85%8D"><span class="toc-number">7.2.4.3.2.</span> <span class="toc-text">多查询条件不分词匹配</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E5%88%86%E8%AF%8D%E5%8C%B9%E9%85%8D"><span class="toc-number">7.2.4.3.3.</span> <span class="toc-text">查询条件分词匹配</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E5%88%86%E8%AF%8D%E5%8C%B9%E9%85%8D%E5%A4%9A%E5%AD%97%E6%AE%B5"><span class="toc-number">7.2.4.3.4.</span> <span class="toc-text">查询条件分词匹配多字段</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E6%A8%A1%E7%B3%8A%E5%8C%B9%E9%85%8D"><span class="toc-number">7.2.4.3.5.</span> <span class="toc-text">查询条件模糊匹配</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#NativeSearchQueryBuilder-QueryBuilders-%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2"><span class="toc-number">7.2.4.4.</span> <span class="toc-text">NativeSearchQueryBuilder + QueryBuilders 高级查询</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%9A%E5%90%88"><span class="toc-number">7.3.</span> <span class="toc-text">聚合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%9D%A5%E6%BA%90"><span class="toc-number">8.</span> <span class="toc-text">参考来源</span></a></li></ol>
+        </div>
+    </div>
+
+<hr/>
+        <ol>
+<li>spring-boot-starter-data-elasticsearch 目前最新版是 3.1.9.RELEASE，不支持 Elasticsearch（下文简称 ES）7.0.x，在下载了多个版本尝试之后，选择 ES6.4.3 版本；</li>
+<li>以下操作均默认已开启 ES 和安装 IK 分词器并全部采用默认配置，默认已了解 ES 的索引的定义、作用以及索引和数据之间的映射关系；</li>
+<li>无特殊说明的话，运行代码都是写在 ESTest 测试类中；</li>
+<li>因为个人增删改查顺序不完全一样，数据查询出来结果可能和示例不是完全一致，属于正常情况，请按照自己的结果做后续测试。</li>
+</ol>
+<p><strong><em>等待 Spring Boot 集成 Elasticsearch7.0.x 之后的 Rest Api，故不再更新。</em></strong></p>
+<span id="more"></span>
+
+<h2 id="版本信息"><a href="#版本信息" class="headerlink" title="版本信息"></a>版本信息</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>version</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spring Boot</td>
+<td>2.1.6.RELEASE</td>
+</tr>
+<tr>
+<td>Elasticsearch</td>
+<td>6.4.3</td>
+</tr>
+<tr>
+<td>IK Analysis for Elasticsearch</td>
+<td>6.4.3</td>
+</tr>
+</tbody></table>
+<h2 id="修改-pom-xml"><a href="#修改-pom-xml" class="headerlink" title="修改 pom.xml"></a>修改 pom.xml</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-elasticsearch<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="修改-application-yml"><a href="#修改-application-yml" class="headerlink" title="修改 application.yml"></a>修改 application.yml</h2><figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">data:</span></span><br><span class="line">    <span class="attr">elasticsearch:</span></span><br><span class="line">      <span class="comment">#默认端口9300</span></span><br><span class="line">      <span class="attr">cluster-nodes:</span> <span class="string">localhost:9300</span></span><br><span class="line">      <span class="comment">#默认名称elasticsearch</span></span><br><span class="line">      <span class="attr">cluster-name:</span> <span class="string">elasticsearch</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="创建映射实体类"><a href="#创建映射实体类" class="headerlink" title="创建映射实体类"></a>创建映射实体类</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.esdemo.domain;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.AllArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"><span class="keyword">import</span> lombok.NoArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.annotation.Id;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.Document;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.Field;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.FieldType;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * product</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@Document(indexName = &quot;product&quot;, type = &quot;docs&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Product</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">2872972075927095189L</span>;</span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line">    <span class="meta">@Field(type = FieldType.Text, analyzer = &quot;ik_max_word&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String title;</span><br><span class="line">    <span class="meta">@Field(type = FieldType.Keyword)</span></span><br><span class="line">    <span class="keyword">private</span> String category;</span><br><span class="line">    <span class="meta">@Field(type = FieldType.Keyword)</span></span><br><span class="line">    <span class="keyword">private</span> String brand;</span><br><span class="line">    <span class="meta">@Field(type = FieldType.Double)</span></span><br><span class="line">    <span class="keyword">private</span> Double price;</span><br><span class="line">    <span class="meta">@Field(index = false, type = FieldType.Keyword)</span></span><br><span class="line">    <span class="keyword">private</span> String images;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建-service-接口"><a href="#创建-service-接口" class="headerlink" title="创建 service 接口"></a>创建 service 接口</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.esdemo.service;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.liuzhuoming23.esdemo.domain.Product;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.repository.ElasticsearchRepository;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * product repository</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ProductRepository</span> <span class="keyword">extends</span> <span class="title">ElasticsearchRepository</span>&lt;<span class="title">Product</span>, <span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建测试类"><a href="#创建测试类" class="headerlink" title="创建测试类"></a>创建测试类</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.esdemo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.liuzhuoming23.esdemo.service.ProductRepository;</span><br><span class="line"><span class="keyword">import</span> org.junit.runner.RunWith;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.ElasticsearchTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.test.context.junit4.SpringRunner;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * test</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RunWith(SpringRunner.class)</span></span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ESTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ElasticsearchTemplate elasticsearchTemplate;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ProductRepository productRepository;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 打印结果</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> products 产品信息</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(Iterable&lt;Product&gt; products)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Product product : products) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;&gt;&gt;&gt;&quot;</span> + product);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查询并打印结果</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> queryBuilder QueryBuilder</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">searchAndPrintln</span><span class="params">(QueryBuilder queryBuilder)</span> </span>&#123;</span><br><span class="line">        NativeSearchQueryBuilder builder = <span class="keyword">new</span> NativeSearchQueryBuilder();</span><br><span class="line">        builder.withQuery(queryBuilder);</span><br><span class="line">        <span class="keyword">this</span>.println(<span class="keyword">this</span>.productRepository.search(builder.build()));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ES-基本操作"><a href="#ES-基本操作" class="headerlink" title="ES 基本操作"></a>ES 基本操作</h2><h3 id="添加索引"><a href="#添加索引" class="headerlink" title="添加索引"></a>添加索引</h3><p>必要，不先进行这一步下面的步骤将毫无意义，重要性类似于 mysql 插入数据前先创建表：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createIndex</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    elasticsearchTemplate.createIndex(Product.class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="数据增删改查操作"><a href="#数据增删改查操作" class="headerlink" title="数据增删改查操作"></a>数据增删改查操作</h3><h4 id="增"><a href="#增" class="headerlink" title="增"></a>增</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">save</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//插入单条数据</span></span><br><span class="line">    Product product = <span class="keyword">new</span> Product(<span class="number">1L</span>, <span class="string">&quot;小米手机8&quot;</span>, <span class="string">&quot;手机&quot;</span>, <span class="string">&quot;小米&quot;</span>, <span class="number">2399.00</span>, <span class="string">&quot;https://liuzhuoming23.github.io/images/avatar.jpg&quot;</span>);</span><br><span class="line">    productRepository.save(product);</span><br><span class="line">    <span class="comment">//插入数据列表（为方便后面查询更为直观，这里的id最好是乱序）</span></span><br><span class="line">    List&lt;Product&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    list.add(<span class="keyword">new</span> Product(<span class="number">4L</span>, <span class="string">&quot;小米手机MIX2&quot;</span>, <span class="string">&quot;手机&quot;</span>, <span class="string">&quot;小米&quot;</span>, <span class="number">6499.00</span>, <span class="string">&quot;https://liuzhuoming23.github.io/images/avatar.jpg&quot;</span>));</span><br><span class="line">    list.add(<span class="keyword">new</span> Product(<span class="number">2L</span>, <span class="string">&quot;坚果手机R1&quot;</span>, <span class="string">&quot;手机&quot;</span>, <span class="string">&quot;锤子&quot;</span>, <span class="number">3699.00</span>, <span class="string">&quot;https://liuzhuoming23.github.io/images/avatar.jpg&quot;</span>));</span><br><span class="line">    list.add(<span class="keyword">new</span> Product(<span class="number">3L</span>, <span class="string">&quot;华为META10&quot;</span>, <span class="string">&quot;手机&quot;</span>, <span class="string">&quot;华为&quot;</span>, <span class="number">4499.00</span>, <span class="string">&quot;https://liuzhuoming23.github.io/images/avatar.jpg&quot;</span>));</span><br><span class="line">    productRepository.saveAll(list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="删"><a href="#删" class="headerlink" title="删"></a>删</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//根据id删除单条数据</span></span><br><span class="line">    productRepository.deleteById(<span class="number">1L</span>);</span><br><span class="line">    <span class="comment">//根据实体类删除单条数据</span></span><br><span class="line">    Product product = <span class="keyword">new</span> Product(<span class="number">1L</span>, <span class="string">&quot;小米手机9&quot;</span>, <span class="string">&quot;手机&quot;</span>, <span class="string">&quot;小米&quot;</span>, <span class="number">3399.00</span>, <span class="string">&quot;https://liuzhuoming23.github.io/images/avatar.jpg&quot;</span>);</span><br><span class="line">    productRepository.delete(product);</span><br><span class="line">    <span class="comment">//根据集合删除多条数据</span></span><br><span class="line">    List&lt;Product&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    list.add(<span class="keyword">new</span> Product(<span class="number">2L</span>, <span class="string">&quot;坚果手机R1&quot;</span>, <span class="string">&quot;手机&quot;</span>, <span class="string">&quot;锤子&quot;</span>, <span class="number">3699.00</span>, <span class="string">&quot;https://liuzhuoming23.github.io/images/avatar.jpg&quot;</span>));</span><br><span class="line">    list.add(<span class="keyword">new</span> Product(<span class="number">3L</span>, <span class="string">&quot;华为META10&quot;</span>, <span class="string">&quot;手机&quot;</span>, <span class="string">&quot;华为&quot;</span>, <span class="number">4499.00</span>, <span class="string">&quot;https://liuzhuoming23.github.io/images/avatar.jpg&quot;</span>));</span><br><span class="line">    productRepository.deleteAll(list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="改"><a href="#改" class="headerlink" title="改"></a>改</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//更新单条数据（保持实体类id和需修改的数据id一致）</span></span><br><span class="line">    Product product = <span class="keyword">new</span> Product(<span class="number">1L</span>, <span class="string">&quot;小米手机9&quot;</span>, <span class="string">&quot;手机&quot;</span>, <span class="string">&quot;小米&quot;</span>, <span class="number">3399.00</span>,</span><br><span class="line">        <span class="string">&quot;https://liuzhuoming23.github.io/images/avatar.jpg&quot;</span>);</span><br><span class="line">    productRepository.save(product);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="查"><a href="#查" class="headerlink" title="查"></a>查</h4><h5 id="基础查询"><a href="#基础查询" class="headerlink" title="基础查询"></a>基础查询</h5><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">findAll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.println(productRepository.findAll());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=2, title=坚果手机R1, category=手机, brand=锤子, price=3699.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=4, title=小米手机MIX2, category=手机, brand=小米, price=6499.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=1, title=小米手机8, category=手机, brand=小米, price=2399.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=3, title=华为META10, category=手机, brand=华为, price=4499.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="基础查询排序"><a href="#基础查询排序" class="headerlink" title="基础查询排序"></a>基础查询排序</h6><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">findAllAndSortByIdDesc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.println(productRepository.findAll(Sort.by(<span class="string">&quot;id&quot;</span>).descending()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=4, title=小米手机MIX2, category=手机, brand=小米, price=6499.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=3, title=华为META10, category=手机, brand=华为, price=4499.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=2, title=坚果手机R1, category=手机, brand=锤子, price=3699.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=1, title=小米手机8, category=手机, brand=小米, price=2399.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="基础查询分页"><a href="#基础查询分页" class="headerlink" title="基础查询分页"></a>基础查询分页</h6><p>分页从第 0 页开始。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">findAllForPage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> pageNum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> pageSize = <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">this</span>.println(<span class="keyword">this</span>.productRepository.findAll(PageRequest.of(pageNum, pageSize)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=2, title=坚果手机R1, category=手机, brand=锤子, price=3699.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=4, title=小米手机MIX2, category=手机, brand=小米, price=6499.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="JPA-方式的查询构建"><a href="#JPA-方式的查询构建" class="headerlink" title="JPA 方式的查询构建"></a>JPA 方式的查询构建</h5><p>在 ProductRepository 接口添加如下接口方法，JPA 会根据实体类的字段和常用查询描述（比如 And、Or、By、Between 等）自动补全方法名称并实现构造相应 sql 的功能：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">List&lt;Product&gt; <span class="title">findByPriceBetween</span><span class="params">(<span class="keyword">double</span> min, <span class="keyword">double</span> max)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>在 ESTest 测试类添加测试代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">findByPriceBetween</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.println(productRepository.findByPriceBetween(<span class="number">3000D</span>, <span class="number">5000D</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=2, title=坚果手机R1, category=手机, brand=锤子, price=3699.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=3, title=华为META10, category=手机, brand=华为, price=4499.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="JPA-方式查询排序"><a href="#JPA-方式查询排序" class="headerlink" title="JPA 方式查询排序"></a>JPA 方式查询排序</h6><p>ProductRepository 接口 findByPriceBetween 方法添加 Sort 参数：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">List&lt;Product&gt; <span class="title">findByPriceBetween</span><span class="params">(<span class="keyword">double</span> min, <span class="keyword">double</span> max, Sort sort)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>在 ESTest 测试类添加测试代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">findByPriceBetweenSort</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.println(productRepository.findByPriceBetween(<span class="number">3000D</span>, <span class="number">5000D</span>, Sort.by(<span class="string">&quot;id&quot;</span>).descending()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=3, title=华为META10, category=手机, brand=华为, price=4499.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=2, title=坚果手机R1, category=手机, brand=锤子, price=3699.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="NativeSearchQueryBuilder-QueryBuilders-基础查询（termQuery，matchQuery，fuzzyQuery）"><a href="#NativeSearchQueryBuilder-QueryBuilders-基础查询（termQuery，matchQuery，fuzzyQuery）" class="headerlink" title="NativeSearchQueryBuilder+QueryBuilders 基础查询（termQuery，matchQuery，fuzzyQuery）"></a>NativeSearchQueryBuilder+QueryBuilders 基础查询（termQuery，matchQuery，fuzzyQuery）</h5><h6 id="查询条件不分词匹配"><a href="#查询条件不分词匹配" class="headerlink" title="查询条件不分词匹配"></a>查询条件不分词匹配</h6><p>不会对查询条件进行分词，查询条件必须完全匹配被 ES 的分词器分词后的词语。比如”小米手机”根据 IK 分词后成为[“小米”,”手机”]，这时候查询条件写”小米手机”是查不到任何匹配结果的，必须用”小米”或者”手机”查询才有匹配结果）（并非类似 sql 的模糊查询，而是基于关键字的完全匹配查询）：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">termQuery</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    QueryBuilder queryBuilder = QueryBuilders.termQuery(<span class="string">&quot;title&quot;</span>, <span class="string">&quot;小米&quot;</span>);</span><br><span class="line">    <span class="keyword">this</span>.searchAndPrintln(queryBuilder);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=4, title=小米手机MIX2, category=手机, brand=小米, price=6499.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=1, title=小米手机8, category=手机, brand=小米, price=2399.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="多查询条件不分词匹配"><a href="#多查询条件不分词匹配" class="headerlink" title="多查询条件不分词匹配"></a>多查询条件不分词匹配</h6><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">termsQuery</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    QueryBuilder queryBuilder = QueryBuilders.termsQuery(<span class="string">&quot;title&quot;</span>, <span class="string">&quot;手机&quot;</span>, <span class="string">&quot;小米&quot;</span>);</span><br><span class="line">    <span class="keyword">this</span>.searchAndPrintln(queryBuilder);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=2, title=坚果手机R1, category=手机, brand=锤子, price=3699.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=4, title=小米手机MIX2, category=手机, brand=小米, price=6499.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=1, title=小米手机8, category=手机, brand=小米, price=2399.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="查询条件分词匹配"><a href="#查询条件分词匹配" class="headerlink" title="查询条件分词匹配"></a>查询条件分词匹配</h6><p>会将查询条件进行分词，比如”小米手机”可能会被 IK 分词为[“小米”,”手机”]，这时候匹配到的就是 ES 里面被分词器分词后完全匹配”小米”或者”手机”的数据：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">matchQuery</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    QueryBuilder queryBuilder = QueryBuilders.matchQuery(<span class="string">&quot;title&quot;</span>, <span class="string">&quot;小米手机&quot;</span>);</span><br><span class="line">    <span class="keyword">this</span>.searchAndPrintln(queryBuilder);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=1, title=小米手机8, category=手机, brand=小米, price=2399.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=4, title=小米手机MIX2, category=手机, brand=小米, price=6499.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=2, title=坚果手机R1, category=手机, brand=锤子, price=3699.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="查询条件分词匹配多字段"><a href="#查询条件分词匹配多字段" class="headerlink" title="查询条件分词匹配多字段"></a>查询条件分词匹配多字段</h6><p>注意 multiMatchQuery 方法的查询条件写在参数第一位和其它方法都不一样，推测应该是为了方便传入不定长数组的字段做的妥协。而且应该只能字段类型是 text 才能分词匹配，如果是 keyword 类型将会根据查询条件不分词匹配（比如 brand 字段匹配”小米 8”不分词匹配将查询不到任何结果）：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">multiMatchQuery</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(<span class="string">&quot;小米8&quot;</span>, <span class="string">&quot;title&quot;</span>, <span class="string">&quot;brand&quot;</span>);</span><br><span class="line">    <span class="keyword">this</span>.searchAndPrintln(queryBuilder);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=1, title=小米手机8, category=手机, brand=小米, price=2399.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=4, title=小米手机MIX2, category=手机, brand=小米, price=6499.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="查询条件模糊匹配"><a href="#查询条件模糊匹配" class="headerlink" title="查询条件模糊匹配"></a>查询条件模糊匹配</h6><p>感觉是介于 查询条件不分词 和 查询条件分词 之间的完全匹配查询方式，但是匹配符<code>*</code>不能用，不是很明确如何正常使用：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fuzzyQuery</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    QueryBuilder queryBuilder = QueryBuilders.fuzzyQuery(<span class="string">&quot;title&quot;</span>, <span class="string">&quot;米手机&quot;</span>);</span><br><span class="line">    <span class="keyword">this</span>.searchAndPrintln(queryBuilder);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=1, title=小米手机8, category=手机, brand=小米, price=2399.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=2, title=坚果手机R1, category=手机, brand=锤子, price=3699.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt;Product(id=4, title=小米手机MIX2, category=手机, brand=小米, price=6499.0, images=https://liuzhuoming23.github.io/images/avatar.jpg)</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="NativeSearchQueryBuilder-QueryBuilders-高级查询"><a href="#NativeSearchQueryBuilder-QueryBuilders-高级查询" class="headerlink" title="NativeSearchQueryBuilder + QueryBuilders 高级查询"></a>NativeSearchQueryBuilder + QueryBuilders 高级查询</h5><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// TODO</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// TODO</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="参考来源"><a href="#参考来源" class="headerlink" title="参考来源"></a>参考来源</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/chen_2890/article/details/83895646">SpringBoot 整合 Elasticsearch - 君临天下 - CSDN 博客</a></li>
+</ol>
+
+        
+    <blockquote>
+<p>本文是maozhijie的原创文章，转载请提前告知作者并且标明出处。<br>内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a> 协议。</p>
+</blockquote>
+
+
+    </div>
+    
+    <div class="donate">
+        <hr/>
+        <button class="donates-btn" onclick="show_donates()">打赏</button>
+        <div class="donate-imgs">
+            
+                <img class="donate-img" src="/images/wechat.jpg" alt="微信打赏"/>
+            
+            
+                <img class="donate-img" src="/images/alipay.jpg" alt="支付宝打赏"/>
+            
+        </div>
+        <script type="text/javascript">
+            function show_donates() {
+                $(".donate-imgs").show();
+                $(".donate-imgs").css("display", "flex");
+                $(".donates-btn").hide();
+            }
+        </script>
+    </div>
+
+</article>
+
+<div class="pagination-index">
+    
+        <hr/>
+        
+            <a style="float:left;" href="/2019/07/12/Docker_Idea/"><i class="fas fa-angle-left"></i>IntelliJ IDEA集成Docker插件
+            </a>
+        
+        
+            <a style="float:right;" href="/2018/10/05/Mysql%E6%B8%B8%E6%A0%87%E7%9A%84%E5%AE%8C%EF%BC%88jian%EF%BC%89%E6%95%B4%EF%BC%88dan%EF%BC%89%E4%BD%BF%E7%94%A8/">Mysql游标的完（jian）整（dan）使用<i class="fas fa-angle-right"></i>
+            </a>
+        
+    
+</div>
+
+    <hr/>
+    <button class="blog-post-comments-btn" onclick="show_posts_comments()">显示评论</button>
+    <div class="blog-post-comments" style="display: none">
+        <div id="valine_comments"></div>
+    </div>
+    <script type="text/javascript">
+        function show_posts_comments() {
+            $(".blog-post-comments").show();
+            $(".blog-post-comments-btn").hide();
+        }
+    </script>
+    <hr/>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">版本信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9-pom-xml"><span class="toc-number">2.</span> <span class="toc-text">修改 pom.xml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9-application-yml"><span class="toc-number">3.</span> <span class="toc-text">修改 application.yml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%98%A0%E5%B0%84%E5%AE%9E%E4%BD%93%E7%B1%BB"><span class="toc-number">4.</span> <span class="toc-text">创建映射实体类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-service-%E6%8E%A5%E5%8F%A3"><span class="toc-number">5.</span> <span class="toc-text">创建 service 接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%B5%8B%E8%AF%95%E7%B1%BB"><span class="toc-number">6.</span> <span class="toc-text">创建测试类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES-%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-number">7.</span> <span class="toc-text">ES 基本操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E7%B4%A2%E5%BC%95"><span class="toc-number">7.1.</span> <span class="toc-text">添加索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E6%93%8D%E4%BD%9C"><span class="toc-number">7.2.</span> <span class="toc-text">数据增删改查操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A2%9E"><span class="toc-number">7.2.1.</span> <span class="toc-text">增</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0"><span class="toc-number">7.2.2.</span> <span class="toc-text">删</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%B9"><span class="toc-number">7.2.3.</span> <span class="toc-text">改</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5"><span class="toc-number">7.2.4.</span> <span class="toc-text">查</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%9F%A5%E8%AF%A2"><span class="toc-number">7.2.4.1.</span> <span class="toc-text">基础查询</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%9F%A5%E8%AF%A2%E6%8E%92%E5%BA%8F"><span class="toc-number">7.2.4.1.1.</span> <span class="toc-text">基础查询排序</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%9F%A5%E8%AF%A2%E5%88%86%E9%A1%B5"><span class="toc-number">7.2.4.1.2.</span> <span class="toc-text">基础查询分页</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#JPA-%E6%96%B9%E5%BC%8F%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%9E%84%E5%BB%BA"><span class="toc-number">7.2.4.2.</span> <span class="toc-text">JPA 方式的查询构建</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#JPA-%E6%96%B9%E5%BC%8F%E6%9F%A5%E8%AF%A2%E6%8E%92%E5%BA%8F"><span class="toc-number">7.2.4.2.1.</span> <span class="toc-text">JPA 方式查询排序</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#NativeSearchQueryBuilder-QueryBuilders-%E5%9F%BA%E7%A1%80%E6%9F%A5%E8%AF%A2%EF%BC%88termQuery%EF%BC%8CmatchQuery%EF%BC%8CfuzzyQuery%EF%BC%89"><span class="toc-number">7.2.4.3.</span> <span class="toc-text">NativeSearchQueryBuilder+QueryBuilders 基础查询（termQuery，matchQuery，fuzzyQuery）</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E4%B8%8D%E5%88%86%E8%AF%8D%E5%8C%B9%E9%85%8D"><span class="toc-number">7.2.4.3.1.</span> <span class="toc-text">查询条件不分词匹配</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%A4%9A%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E4%B8%8D%E5%88%86%E8%AF%8D%E5%8C%B9%E9%85%8D"><span class="toc-number">7.2.4.3.2.</span> <span class="toc-text">多查询条件不分词匹配</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E5%88%86%E8%AF%8D%E5%8C%B9%E9%85%8D"><span class="toc-number">7.2.4.3.3.</span> <span class="toc-text">查询条件分词匹配</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E5%88%86%E8%AF%8D%E5%8C%B9%E9%85%8D%E5%A4%9A%E5%AD%97%E6%AE%B5"><span class="toc-number">7.2.4.3.4.</span> <span class="toc-text">查询条件分词匹配多字段</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6%E6%A8%A1%E7%B3%8A%E5%8C%B9%E9%85%8D"><span class="toc-number">7.2.4.3.5.</span> <span class="toc-text">查询条件模糊匹配</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#NativeSearchQueryBuilder-QueryBuilders-%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2"><span class="toc-number">7.2.4.4.</span> <span class="toc-text">NativeSearchQueryBuilder + QueryBuilders 高级查询</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%9A%E5%90%88"><span class="toc-number">7.3.</span> <span class="toc-text">聚合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%9D%A5%E6%BA%90"><span class="toc-number">8.</span> <span class="toc-text">参考来源</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://blog.futurenotfound.top/2019/07/09/Elasticsearch/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://blog.futurenotfound.top/2019/07/09/Elasticsearch/&text=Spring Boot集成Elasticsearch"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://blog.futurenotfound.top/2019/07/09/Elasticsearch/&title=Spring Boot集成Elasticsearch"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://blog.futurenotfound.top/2019/07/09/Elasticsearch/&is_video=false&description=Spring Boot集成Elasticsearch"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Spring Boot集成Elasticsearch&body=Check out this article: https://blog.futurenotfound.top/2019/07/09/Elasticsearch/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://blog.futurenotfound.top/2019/07/09/Elasticsearch/&title=Spring Boot集成Elasticsearch"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://blog.futurenotfound.top/2019/07/09/Elasticsearch/&title=Spring Boot集成Elasticsearch"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://blog.futurenotfound.top/2019/07/09/Elasticsearch/&title=Spring Boot集成Elasticsearch"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://blog.futurenotfound.top/2019/07/09/Elasticsearch/&title=Spring Boot集成Elasticsearch"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://blog.futurenotfound.top/2019/07/09/Elasticsearch/&name=Spring Boot集成Elasticsearch&description=&lt;ol&gt;
+&lt;li&gt;spring-boot-starter-data-elasticsearch 目前最新版是 3.1.9.RELEASE，不支持 Elasticsearch（下文简称 ES）7.0.x，在下载了多个版本尝试之后，选择 ES6.4.3 版本；&lt;/li&gt;
+&lt;li&gt;以下操作均默认已开启 ES 和安装 IK 分词器并全部采用默认配置，默认已了解 ES 的索引的定义、作用以及索引和数据之间的映射关系；&lt;/li&gt;
+&lt;li&gt;无特殊说明的话，运行代码都是写在 ESTest 测试类中；&lt;/li&gt;
+&lt;li&gt;因为个人增删改查顺序不完全一样，数据查询出来结果可能和示例不是完全一致，属于正常情况，请按照自己的结果做后续测试。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;等待 Spring Boot 集成 Elasticsearch7.0.x 之后的 Rest Api，故不再更新。&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://blog.futurenotfound.top/2019/07/09/Elasticsearch/&t=Spring Boot集成Elasticsearch"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer"style="display: none">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+<!--        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>-->
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer-extend">
+  <div class="footer-left">
+    &copy;
+    
+    
+    2021
+    maozhijie
+    
+      <a target="_blank" rel="noopener" href='https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh'>CC BY-NC-SA 4.0</a>
+    
+    Powered by
+    <a href="https://hexo.io/" target="_blank" rel="nofollow">hexo</a
+  </div>
+</footer>
+<footer id="footer">
+  <div class="footer-left">
+    
+      <a target="_blank" rel="noopener" href='http://beian.miit.gov.cn/'>陕ICP备2021008394号-1</a>
+      
+    
+		 	<a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61011302001259">陕公网安备 61011302001259号</a>
+    
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/friends/">友链</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // copy-btn HTML
+            var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+            btn += '<i class="far fa-clone"></i>';
+            btn += '</span>';
+            // mount it!
+            $(".highlight table").before(btn);
+            var clip = new ClipboardJS('.btn-copy', {
+                text: function (trigger) {
+                    return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str, it) => str + it.innerText + '\n', '')
+                }
+            });
+            clip.on('success', function (e) {
+                e.trigger.setAttribute('aria-label', "复制成功!");
+                e.clearSelection();
+            })
+        })
+    </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?f01b82d682e8b8c168d7e14cb993e170";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+<!-- Valine Comments -->
+
+    
+<script src="/lib/valine/Valine.min.js"></script>
+
+    <script type="text/javascript">
+        new Valine({
+            el: '#valine_comments',
+            appId: 'PYGSxQwogW3Qi5wie5gbK6tt-gzGzoHsz',
+            appKey: 'VgamBFH9CKcnxsD6oM4Ijm0n',
+            placeholder: '想对作者说点什么？',
+            avatar: 'identicon',
+            pageSize: '8',
+            lang: 'zh-cn',
+            visitor: 'true',
+            recordIP: 'true',
+            enableQQ: 'true',
+            meta: ['nick', 'mail', 'link'],
+            requiredFields: ['nick', 'mail'],
+        });
+    </script>
+
+</body>
+</html>

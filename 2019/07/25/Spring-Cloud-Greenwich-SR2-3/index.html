@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Gateway 的 Github 页面 Readme 对 Gateway 描述如下：  This project provides an API Gateway built on top of the Spring Ecosystem, including: Spring 5, Spring Boot 2 and Project Reactor. Spring Cloud Gateway aims">
+<meta property="og:type" content="article">
+<meta property="og:title" content="路由中心-Gateway">
+<meta property="og:url" content="https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/index.html">
+<meta property="og:site_name" content="FutureNotFound">
+<meta property="og:description" content="Gateway 的 Github 页面 Readme 对 Gateway 描述如下：  This project provides an API Gateway built on top of the Spring Ecosystem, including: Spring 5, Spring Boot 2 and Project Reactor. Spring Cloud Gateway aims">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/02.jpg">
+<meta property="og:image" content="https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/03.jpg">
+<meta property="og:image" content="https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/04.jpg">
+<meta property="og:image" content="https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/05.jpg">
+<meta property="article:published_time" content="2019-07-25T06:54:32.000Z">
+<meta property="article:modified_time" content="2021-07-20T22:29:57.827Z">
+<meta property="article:author" content="maozhijie">
+<meta property="article:tag" content="Spring Cloud Gateway">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/02.jpg">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/avatar.png">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/avatar.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar.png">
+          
+        
+    
+    <!-- title -->
+    <title>路由中心-Gateway</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="FutureNotFound" type="application/atom+xml" />
+    
+    
+      <script>
+          (function(d) {
+            var config = {
+              kitId: 'twa1wya',
+              scriptTimeout: 3000,
+              async: true
+            },
+            h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+          })(document);
+      </script>
+    
+    <!-- Google Adsense -->
+    
+            <script data-ad-client="ca-pub-8520855660949547" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/08/05/Spring-Cloud-Greenwich-SR2-4/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/07/25/Spring-Cloud-Greenwich-SR2-2/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="toc-div" class="toc-article" >
+        
+          <div id="toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-Gateway-%E9%A1%B9%E7%9B%AE"><span class="toc-number">1.</span> <span class="toc-text">创建 Gateway 项目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B7%AF%E7%94%B1"><span class="toc-number">2.</span> <span class="toc-text">自定义路由</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-yml-%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">基于 yml 的配置方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-Spring-%E9%85%8D%E7%BD%AE%E7%B1%BB%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">基于 Spring 配置类的配置方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-number">3.</span> <span class="toc-text">自定义过滤器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B1%80%E9%83%A8%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-number">3.1.</span> <span class="toc-text">自定义局部过滤器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B1%80%E9%83%A8%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="toc-number">3.1.1.</span> <span class="toc-text">自定义局部过滤器工厂</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%85%A8%E5%B1%80%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-number">3.2.</span> <span class="toc-text">自定义全局过滤器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%AE%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="toc-number">4.</span> <span class="toc-text">内置过滤器工厂</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%AA%E5%8F%96%E8%AF%B7%E6%B1%82-uri-%E5%89%8D%E7%BC%80%E7%9A%84%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82-StripPrefixGatewayFilterFactory"><span class="toc-number">4.1.</span> <span class="toc-text">截取请求 uri 前缀的过滤器工厂-StripPrefixGatewayFilterFactory</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95%E5%81%9A%E9%99%90%E6%B5%81%E7%9A%84%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82-RequestRateLimiterGatewayFilterFactory"><span class="toc-number">4.2.</span> <span class="toc-text">基于令牌桶算法做限流的过滤器工厂-RequestRateLimiterGatewayFilterFactory</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE"><span class="toc-number">5.</span> <span class="toc-text">其他配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CORS-%E8%B7%A8%E5%9F%9F%E5%A4%84%E7%90%86"><span class="toc-number">5.1.</span> <span class="toc-text">CORS 跨域处理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%9D%A5%E6%BA%90"><span class="toc-number">6.</span> <span class="toc-text">参考来源</span></a></li></ol>
+          </div>
+        
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        
+    <h1 class="posttitle" itemprop="name headline">
+        路由中心-Gateway
+    </h1>
+
+
+
+        <div class="meta">
+            
+    <div class="postdate">
+      
+        <time datetime="2019-07-25T06:54:32.000Z" itemprop="datePublished">2019-07-25</time>
+        
+      
+    </div>
+
+
+            
+    <div class="article-category">
+<!--        <i class="fas fa-archive"></i>-->
+        <a class="category-link" href="/categories/Java/">Java</a> › <a class="category-link" href="/categories/Java/Spring/">Spring</a> › <a class="category-link" href="/categories/Java/Spring/Spring-Cloud/">Spring Cloud</a>
+    </div>
+
+
+            
+    <div class="article-tag">
+<!--        <i class="fas fa-tag"></i>-->
+        <a class="tag-link-link" href="/tags/Spring-Cloud-Gateway/" rel="tag">Spring Cloud Gateway</a>
+    </div>
+
+
+            
+    <div class="article-count">
+        <span id="/2019/07/25/Spring-Cloud-Greenwich-SR2-3/" class="leancloud_visitors" data-flag-title="路由中心-Gateway">
+            <span class="post-meta-item-text">浏览量</span>
+            <span class="leancloud-visitors-count">0</span>
+        </span>
+    </div>
+
+            
+    <div class="wordcount-symbols">
+      
+        <span>字数</span>
+        <span>17k</span>
+      
+    </div>
+    <div class="wordcount-time">
+      
+        <span>阅读时间</span>
+        <span>32 分钟</span>
+      
+    </div>
+
+
+        </div>
+    </header>
+    
+
+    <div class="content" itemprop="articleBody">
+        
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">目录</strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-Gateway-%E9%A1%B9%E7%9B%AE"><span class="toc-number">1.</span> <span class="toc-text">创建 Gateway 项目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B7%AF%E7%94%B1"><span class="toc-number">2.</span> <span class="toc-text">自定义路由</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-yml-%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">基于 yml 的配置方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-Spring-%E9%85%8D%E7%BD%AE%E7%B1%BB%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">基于 Spring 配置类的配置方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-number">3.</span> <span class="toc-text">自定义过滤器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B1%80%E9%83%A8%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-number">3.1.</span> <span class="toc-text">自定义局部过滤器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B1%80%E9%83%A8%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="toc-number">3.1.1.</span> <span class="toc-text">自定义局部过滤器工厂</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%85%A8%E5%B1%80%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-number">3.2.</span> <span class="toc-text">自定义全局过滤器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%AE%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="toc-number">4.</span> <span class="toc-text">内置过滤器工厂</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%AA%E5%8F%96%E8%AF%B7%E6%B1%82-uri-%E5%89%8D%E7%BC%80%E7%9A%84%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82-StripPrefixGatewayFilterFactory"><span class="toc-number">4.1.</span> <span class="toc-text">截取请求 uri 前缀的过滤器工厂-StripPrefixGatewayFilterFactory</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95%E5%81%9A%E9%99%90%E6%B5%81%E7%9A%84%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82-RequestRateLimiterGatewayFilterFactory"><span class="toc-number">4.2.</span> <span class="toc-text">基于令牌桶算法做限流的过滤器工厂-RequestRateLimiterGatewayFilterFactory</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE"><span class="toc-number">5.</span> <span class="toc-text">其他配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CORS-%E8%B7%A8%E5%9F%9F%E5%A4%84%E7%90%86"><span class="toc-number">5.1.</span> <span class="toc-text">CORS 跨域处理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%9D%A5%E6%BA%90"><span class="toc-number">6.</span> <span class="toc-text">参考来源</span></a></li></ol>
+        </div>
+    </div>
+
+<hr/>
+        <p>Gateway 的 Github 页面 Readme 对 Gateway 描述如下：</p>
+<blockquote>
+<p>This project provides an API Gateway built on top of the Spring Ecosystem, including: Spring 5, Spring Boot 2 and Project Reactor. Spring Cloud Gateway aims to provide a simple, yet effective way to route to APIs and provide cross cutting concerns to them such as: security, monitoring/metrics, and resiliency.</p>
+</blockquote>
+<blockquote>
+<p>该项目提供了一个建立在 Spring Ecosystem 之上的 API 网关，包括：Spring 5，Spring Boot 2 和 Project Reactor。Spring Cloud Gateway 旨在提供一种简单而有效的方式来路由到 API，并为他们提供横切关注点，例如：安全性，监控/指标和弹性。</p>
+</blockquote>
+<p>简单来讲（从名字看）官方对 Gateway 的定位是<strong>api 网关</strong>。</p>
+<span id="more"></span>
+
+<h2 id="创建-Gateway-项目"><a href="#创建-Gateway-项目" class="headerlink" title="创建 Gateway 项目"></a>创建 Gateway 项目</h2><p>创建 gateway 项目依赖继承 route-server 项目，pom.xml 文件如下：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.github.liuzhuoming23<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>route-center<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">packaging</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>gateway<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>gateway<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">description</span>&gt;</span>Demo project for Spring Cloud<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-gateway<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-actuator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><em>切记不要添加 spring-boot-starter-web 依赖，不然会报错<code>No qualifying bean of type &#39;org.springframework.core.convert.ConversionService&#39; available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: &#123;@org.springframework.beans.factory.annotation.Qualifier(value=webFluxConversionService)&#125;</code>，找了大半天才找到这个问题。<del>然而启动项目就有请勿添加 spring-boot-starter-web 依赖的提示，是我没看见。</del></em><br>application.yml 配置为：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8030</span></span><br><span class="line"></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">@pom.artifactId@</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="attr">discovery:</span></span><br><span class="line">        <span class="attr">locator:</span></span><br><span class="line">          <span class="comment">#是否开启默认路由方式（按照注册到Eureka的实例名自动创建路由）</span></span><br><span class="line">          <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://admin:admin@localhost:8000/eureka/</span></span><br></pre></td></tr></table></figure>
+
+<p>这样就创建了用 Eureka 注册的服务实例名称为路由名称的路由，即图中圈起来的名称：<br><img src="02.jpg" alt="02.jpg"><br>启动项目，访问<a target="_blank" rel="noopener" href="http://localhost:8030/FEIGN/port/%F0%9F%90%95">http://localhost:8030/FEIGN/port/🐕</a>，返回结果：<br><code>🐕: client port | 8011 | feign</code><br>说明默认路由创建成功。</p>
+<h2 id="自定义路由"><a href="#自定义路由" class="headerlink" title="自定义路由"></a>自定义路由</h2><p>默认路由名称是按照在 Eureka 里面注册的实例名称来分配的，Eureka 实例名称全大写，所以路由名称也是全大写，不太符合平时全小写的习惯，要解决这个问题可以使用自定义路由。</p>
+<h3 id="基于-yml-的配置方式"><a href="#基于-yml-的配置方式" class="headerlink" title="基于 yml 的配置方式"></a>基于 yml 的配置方式</h3><p>屏蔽默认路由，添加自定义路由，即修改 gateway 项目的 application.yml 为：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8030</span></span><br><span class="line"></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">@pom.artifactId@</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line"><span class="comment">#      discovery:</span></span><br><span class="line"><span class="comment">#        locator:</span></span><br><span class="line"><span class="comment">#          enabled: true</span></span><br><span class="line">      <span class="attr">routes:</span></span><br><span class="line">          <span class="comment">#路由名称，自定义</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">feign</span></span><br><span class="line">          <span class="comment">#需要转发到的服务名称</span></span><br><span class="line">          <span class="attr">uri:</span> <span class="string">lb://FEIGN</span></span><br><span class="line">          <span class="attr">predicates:</span></span><br><span class="line">            <span class="comment">#向gateway请求的路径</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">Path=/feign/**</span></span><br><span class="line">          <span class="comment">#过滤器工厂配置</span></span><br><span class="line">          <span class="attr">filters:</span></span><br><span class="line">            <span class="comment">#gateway向注册的服务请求的路径需要消除的前缀数量（此处是删除`/feign`）（示例：当请求http://gateway.com/feign/test.html时会转发到FEIGN/test.html）</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">StripPrefix=1</span></span><br><span class="line"></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://admin:admin@localhost:8000/eureka/</span></span><br></pre></td></tr></table></figure>
+
+<p><em>配置里面的 filters.StripPrefix 参数对应的是 StripPrefixGatewayFilterFactory，即 gateway 自定义过滤器工厂，关于过滤器工厂后面再说，总之它的作用是，根据配置的数字删除 gateway 转发到注册服务时候 url 的前缀数量，比如向 gateway 发起请求为<a target="_blank" rel="noopener" href="http://localhost:8030/feign/port/%F0%9F%90%95">http://localhost:8030/feign/port/🐕</a>，这个值配置为 1 的话，gateway 向注册的服务发起的请求就成了<a target="_blank" rel="noopener" href="http://feign/port/%F0%9F%90%95">lb://FEIGN/port/🐕</a>，这个值配置为 2 的话，gateway 向注册的服务发起的请求就成了<a target="_blank" rel="noopener" href="http://feign/%F0%9F%90%95">lb://FEIGN/🐕</a>。</em><br>重启服务，访问<a target="_blank" rel="noopener" href="http://localhost:8030/feign/port/%F0%9F%90%95">http://localhost:8030/feign/port/🐕</a>，返回结果：<br><code>🐕: client port | 8011 | feign</code><br>说明自定义路由创建成功。</p>
+<h3 id="基于-Spring-配置类的配置方式"><a href="#基于-Spring-配置类的配置方式" class="headerlink" title="基于 Spring 配置类的配置方式"></a>基于 Spring 配置类的配置方式</h3><p>先把上一步修改的 application.yml 内有关路由的配置注释掉，因为这两种方式本质上其实是同一种配置方式，参数相同的话实现的功能完全等价，相同 id 的路由应该会导致不可控的错误：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8030</span></span><br><span class="line"></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">@pom.artifactId@</span></span><br><span class="line"><span class="comment">#  cloud:</span></span><br><span class="line"><span class="comment">#    gateway:</span></span><br><span class="line"><span class="comment">#      discovery:</span></span><br><span class="line"><span class="comment">#        locator:</span></span><br><span class="line"><span class="comment">#          enabled: true</span></span><br><span class="line"><span class="comment">#      routes:</span></span><br><span class="line"><span class="comment">#        - id: feign</span></span><br><span class="line"><span class="comment">#          uri: lb://FEIGN</span></span><br><span class="line"><span class="comment">#          predicates:</span></span><br><span class="line"><span class="comment">#            - Path=/feign/**</span></span><br><span class="line"><span class="comment">#          filters:</span></span><br><span class="line"><span class="comment">#            - StripPrefix=1</span></span><br><span class="line"></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://admin:admin@localhost:8000/eureka/</span></span><br></pre></td></tr></table></figure>
+
+<p>创建 route.RouteLocators 类，内容为：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.gateway.route;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.route.RouteLocator;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 路由配置</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RouteLocators</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RouteLocator <span class="title">serviceFeignRouteLocator</span><span class="params">(RouteLocatorBuilder builder)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> builder.routes().route(r -&gt;</span><br><span class="line">            r.path(<span class="string">&quot;/feign/**&quot;</span>)</span><br><span class="line">                .filters(</span><br><span class="line">                    f -&gt; f.stripPrefix(<span class="number">1</span>)</span><br><span class="line">                )</span><br><span class="line">                .uri(<span class="string">&quot;lb://FEIGN&quot;</span>)</span><br><span class="line">                .id(<span class="string">&quot;feign&quot;</span>)</span><br><span class="line">        ).build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重启项目，访问<a target="_blank" rel="noopener" href="http://localhost:8030/feign/port/%F0%9F%90%95">http://localhost:8030/feign/port/🐕</a>，返回结果：<br><code>🐕: client port | 8010 | feign</code><br>说明自定义路由创建成功。<br><em>虽然基于配置类的路由方式在入参方式方面更自由一点（比如动态传入 responseHeader 参数等），但是我更喜欢基于 yml 的配置方式，因为 yml 和配置中心组合使用可以实现自由切换路由配置的功能。</em></p>
+<h2 id="自定义过滤器"><a href="#自定义过滤器" class="headerlink" title="自定义过滤器"></a>自定义过滤器</h2><h3 id="自定义局部过滤器"><a href="#自定义局部过滤器" class="headerlink" title="自定义局部过滤器"></a>自定义局部过滤器</h3><p>假定一个需要在 console 中打印请求 uri 和 query 参数的需求（这种需求在实际开发中几乎不会存在），就可以在过滤器中完成。<br>首先创建 filter.PrintUriAndQueryGatewayFilter 类（注意规范命名，不然后面可能会出现不可控错误）：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.gateway.filter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.filter.GatewayFilter;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.filter.GatewayFilterChain;</span><br><span class="line"><span class="keyword">import</span> org.springframework.core.Ordered;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.ServerWebExchange;</span><br><span class="line"><span class="keyword">import</span> reactor.core.publisher.Mono;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 打印请求uri和query参数局部过滤器</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PrintUriAndQueryGatewayFilter</span> <span class="keyword">implements</span> <span class="title">GatewayFilter</span>, <span class="title">Ordered</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;Void&gt; <span class="title">filter</span><span class="params">(ServerWebExchange exchange, GatewayFilterChain chain)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> chain</span><br><span class="line">            .filter(exchange)</span><br><span class="line">            .then(Mono.fromRunnable(() -&gt; &#123;</span><br><span class="line">                    System.out.println(exchange.getRequest().getURI().getRawPath() + <span class="string">&quot;?&quot;</span></span><br><span class="line">                        + exchange.getRequest().getURI().getRawQuery());</span><br><span class="line">                &#125;)</span><br><span class="line">            );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Ordered.LOWEST_PRECEDENCE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><em>其中实现接口 GatewayFilter 表明这个类是一个 gateway 局部过滤器，Ordered 接口为定义过滤器的优先度，Ordered.LOWEST_PRECEDENCE 为最低优先度。</em><br>因为过滤器无法使用 yml 配置，所以此处选择修改配置类 RouteLocators：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.gateway.route;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.liuzhuoming23.gateway.filter.PrintUriAndQueryGatewayFilter;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.route.RouteLocator;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 路由配置</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RouteLocators</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RouteLocator <span class="title">serviceFeignRouteLocator</span><span class="params">(RouteLocatorBuilder builder)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> builder.routes().route(r -&gt;</span><br><span class="line">            r.path(<span class="string">&quot;/feign/**&quot;</span>)</span><br><span class="line">                .filters(</span><br><span class="line">                    f -&gt; f.stripPrefix(<span class="number">1</span>)</span><br><span class="line">                        .filter(<span class="keyword">new</span> PrintUriAndQueryGatewayFilter())</span><br><span class="line">                )</span><br><span class="line">                .uri(<span class="string">&quot;lb://FEIGN&quot;</span>)</span><br><span class="line">                .id(<span class="string">&quot;feign&quot;</span>)</span><br><span class="line">        ).build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重启项目，并请求<a target="_blank" rel="noopener" href="http://localhost:8030/feign/port/liuzhuoming?age=14&id=1">http://localhost:8030/feign/port/liuzhuoming?age=14&amp;id=1</a>，IntelliJ IDEA 的 console 打印出日志：<br><code>/port/liuzhuoming?age=14&amp;id=1</code><br>说明自定义过滤器配置成功。</p>
+<h4 id="自定义局部过滤器工厂"><a href="#自定义局部过滤器工厂" class="headerlink" title="自定义局部过滤器工厂"></a>自定义局部过滤器工厂</h4><p>上面的 PrintUriAndQueryGatewayFilter 过滤器虽然可以正常使用，但是只能在路由配置类使用，并不能在 yml 配置，感觉和我习惯有悖，解决办法就是创建自定义过滤器工厂。<br>这次使用 yml 配置路由。首先创建 filter.factory.PrintUriAndQueryGatewayFilterFactory 类（注意规范命名，不然后面可能会出现不可控错误）：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.gateway.filter.factory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.liuzhuoming23.gateway.filter.PrintUriAndQueryGatewayFilter;</span><br><span class="line"><span class="keyword">import</span> java.util.Collections;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.filter.GatewayFilter;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 打印请求uri和query参数局部过滤器工厂</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PrintUriAndQueryGatewayFilterFactory</span> <span class="keyword">extends</span></span></span><br><span class="line"><span class="class">    <span class="title">AbstractGatewayFilterFactory</span>&lt;<span class="title">PrintUriAndQueryGatewayFilterFactory</span>.<span class="title">Config</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PrintUriAndQueryGatewayFilterFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(Config.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;String&gt; <span class="title">shortcutFieldOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Collections.singletonList(<span class="string">&quot;enabled&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> GatewayFilter <span class="title">apply</span><span class="params">(Config config)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (exchange, chain) -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (!config.isEnabled()) &#123;</span><br><span class="line">                <span class="keyword">return</span> chain.filter(exchange);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> PrintUriAndQueryGatewayFilter().filter(exchange, chain);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Config</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 是否开启打印</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> enabled;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEnabled</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> enabled;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEnabled</span><span class="params">(<span class="keyword">boolean</span> enabled)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.enabled = enabled;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><em>其中 Config 为自定义参数类，其中包含了一个叫 enabled 的 boolean 类型参数。shortcutFieldOrder 方法为定义参数列表。（参照内置过滤器工厂）</em><br>在 config.SpringCloudConfig 类添加 PrintUriAndQueryGatewayFilterFactory 的 bean：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.gateway.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.liuzhuoming23.gateway.filter.factory.PrintUriAndQueryGatewayFilterFactory;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> reactor.core.publisher.Mono;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * spring cloud config</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringCloudConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function">KeyResolver <span class="title">hostnameKeyResolver</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> exchange -&gt; Mono.just(exchange.getRequest().getRemoteAddress().getHostName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function">PrintUriAndQueryGatewayFilterFactory <span class="title">printUriAndQueryGatewayFilterFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> PrintUriAndQueryGatewayFilterFactory();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 application.yml 添加自定义过滤器工厂配置：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8030</span></span><br><span class="line"></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">@pom.artifactId@</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line"><span class="comment">#      discovery:</span></span><br><span class="line"><span class="comment">#        locator:</span></span><br><span class="line"><span class="comment">#          enabled: true</span></span><br><span class="line">      <span class="attr">routes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">feign</span></span><br><span class="line">          <span class="attr">uri:</span> <span class="string">lb://FEIGN</span></span><br><span class="line">          <span class="attr">predicates:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">Path=/feign/**</span></span><br><span class="line">          <span class="attr">filters:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">StripPrefix=1</span></span><br><span class="line">            <span class="comment">#自定义过滤器工厂，其中的true即Config类的enabled参数的值</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">PrintUriAndQuery=true</span></span><br><span class="line"></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://admin:admin@localhost:8000/eureka/</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>重启项目，并请求<a target="_blank" rel="noopener" href="http://localhost:8030/feign/port/liuzhuoming?age=14&id=1">http://localhost:8030/feign/port/liuzhuoming?age=14&amp;id=1</a>，IntelliJ IDEA 的 console 打印出日志：<br><code>/port/liuzhuoming?age=14&amp;id=1</code><br>说明自定义过滤器工厂配置成功。</p>
+<h3 id="自定义全局过滤器"><a href="#自定义全局过滤器" class="headerlink" title="自定义全局过滤器"></a>自定义全局过滤器</h3><p>全局过滤器和局部过滤器类似，唯一区别是全局过滤器无需在路由配置即可全局生效。<br>假定一个根据 requestHeader 是否存在 Authorization 字段来决定返回数居还是返回 401 错误的需求（这种需求在实际开发中几乎不会存在），就可以在全局过滤器中完成。<br>创建 filter.AuthorizationGlobalFilter 类（注意规范命名，不然后面可能会出现不可控错误）：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.gateway.filter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Objects;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.filter.GatewayFilterChain;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.filter.GlobalFilter;</span><br><span class="line"><span class="keyword">import</span> org.springframework.core.Ordered;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.HttpStatus;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.server.ServerWebExchange;</span><br><span class="line"><span class="keyword">import</span> reactor.core.publisher.Mono;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 请求权限全局过滤器</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AuthorizationGlobalFilter</span> <span class="keyword">implements</span> <span class="title">GlobalFilter</span>, <span class="title">Ordered</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;Void&gt; <span class="title">filter</span><span class="params">(ServerWebExchange exchange, GatewayFilterChain chain)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            String token = Objects</span><br><span class="line">                .requireNonNull(exchange.getRequest().getHeaders().get(<span class="string">&quot;Authorization&quot;</span>)).get(<span class="number">0</span>);</span><br><span class="line">            <span class="keyword">if</span> (token == <span class="keyword">null</span>) &#123;</span><br><span class="line">                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);</span><br><span class="line">                <span class="keyword">return</span> exchange.getResponse().setComplete();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);</span><br><span class="line">            <span class="keyword">return</span> exchange.getResponse().setComplete();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> chain.filter(exchange);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Ordered.HIGHEST_PRECEDENCE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><em>注意这里实现的是全局过滤器的 GlobalFilter 接口，不是局部过滤器的 GatewayFilter 接口。</em><br>在 config.SpringCloudConfig 注入全局过滤器的 bean：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.gateway.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.liuzhuoming23.gateway.filter.AuthorizationGlobalFilter;</span><br><span class="line"><span class="keyword">import</span> com.github.liuzhuoming23.gateway.filter.factory.PrintUriAndQueryGatewayFilterFactory;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> reactor.core.publisher.Mono;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * spring cloud config</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringCloudConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function">KeyResolver <span class="title">hostnameKeyResolver</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> exchange -&gt; Mono.just(exchange.getRequest().getRemoteAddress().getHostName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function">PrintUriAndQueryGatewayFilterFactory <span class="title">printUriAndQueryGatewayFilterFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> PrintUriAndQueryGatewayFilterFactory();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function">AuthorizationGlobalFilter <span class="title">authorizationGlobalFilter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> AuthorizationGlobalFilter();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重启项目，并在 Postman 直接请求接口<a target="_blank" rel="noopener" href="http://localhost:8030/feign/port/%F0%9F%90%95">http://localhost:8030/feign/port/🐕</a>，返回结果：<br><code>401 Unauthorized</code><br>在 Postman 的 Headers 添加字段 Authorization=1234，再次请求<a target="_blank" rel="noopener" href="http://localhost:8030/feign/port/%F0%9F%90%95">http://localhost:8030/feign/port/🐕</a>，返回结果：<br><code>🐕: client port | 8011 | feign</code><br>说明全局过滤器配置成功。</p>
+<h2 id="内置过滤器工厂"><a href="#内置过滤器工厂" class="headerlink" title="内置过滤器工厂"></a>内置过滤器工厂</h2><h3 id="截取请求-uri-前缀的过滤器工厂-StripPrefixGatewayFilterFactory"><a href="#截取请求-uri-前缀的过滤器工厂-StripPrefixGatewayFilterFactory" class="headerlink" title="截取请求 uri 前缀的过滤器工厂-StripPrefixGatewayFilterFactory"></a>截取请求 uri 前缀的过滤器工厂-StripPrefixGatewayFilterFactory</h3><p>之前已经简单说过这个过滤器的作用，因为作用很简单，不再作详细说明。</p>
+<h3 id="基于令牌桶算法做限流的过滤器工厂-RequestRateLimiterGatewayFilterFactory"><a href="#基于令牌桶算法做限流的过滤器工厂-RequestRateLimiterGatewayFilterFactory" class="headerlink" title="基于令牌桶算法做限流的过滤器工厂-RequestRateLimiterGatewayFilterFactory"></a>基于令牌桶算法做限流的过滤器工厂-RequestRateLimiterGatewayFilterFactory</h3><p>这里可以自定义限流 key，示例为基于 hostname 拦截，并且过滤器配置在 yml 中，如果是习惯配置在配置类里面的，也很简单，可以自行研究。<br>创建 config.SpringCloudConfig 配置类，在其中初始化 KeyResolver 的 bean：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.liuzhuoming23.gateway.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> reactor.core.publisher.Mono;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * spring cloud config</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringCloudConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function">KeyResolver <span class="title">hostnameKeyResolver</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> exchange -&gt; Mono.just(exchange.getRequest().getRemoteAddress().getHostName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><em>其中 Mono 为 reactor 响应式编程库自带的类型，有兴趣可以自行了解，在此不作赘述。</em><br>默认限流基于 redis，所以首先开启本地 redis，然后修改 pom.xml 添加 spring-boot-starter-data-redis 依赖：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.github.liuzhuoming23<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>route-center<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">packaging</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>gateway<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>gateway<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">description</span>&gt;</span>Demo project for Spring Cloud<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-gateway<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-actuator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在路由的过滤器配置里添加 RequestRateLimiter 过滤器工厂配置，修改 application.yml 为：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8030</span></span><br><span class="line"></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">@pom.artifactId@</span></span><br><span class="line">  <span class="attr">redis:</span></span><br><span class="line">    <span class="attr">host:</span> <span class="string">localhost</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">6379</span></span><br><span class="line">    <span class="attr">password:</span></span><br><span class="line">    <span class="attr">timeout:</span> <span class="number">500</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line"><span class="comment">#      discovery:</span></span><br><span class="line"><span class="comment">#        locator:</span></span><br><span class="line"><span class="comment">#          enabled: true</span></span><br><span class="line">      <span class="attr">routes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">feign</span></span><br><span class="line">          <span class="attr">uri:</span> <span class="string">lb://FEIGN</span></span><br><span class="line">          <span class="attr">predicates:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">Path=/feign/**</span></span><br><span class="line">          <span class="attr">filters:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">StripPrefix=1</span></span><br><span class="line">            <span class="comment">#过滤器工厂名称（推断是根据工厂类名来匹配，RequestRateLimiter-&gt;RequestRateLimiterGatewayFilterFactory，即删除后面的GatewayFilterFactory）</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">RequestRateLimiter</span></span><br><span class="line">              <span class="comment">#过滤器工厂参数集合</span></span><br><span class="line">              <span class="attr">args:</span></span><br><span class="line">                <span class="comment">#每秒新增令牌数量</span></span><br><span class="line">                <span class="attr">redis-rate-limiter.replenishRate:</span> <span class="number">1</span></span><br><span class="line">                <span class="comment">#令牌桶最大容量</span></span><br><span class="line">                <span class="attr">redis-rate-limiter.burstCapacity:</span> <span class="number">3</span></span><br><span class="line">                <span class="comment">#自定义key解析器的bean名称，即在config.SpringCloudConfig配置的bean名称</span></span><br><span class="line">                <span class="attr">key-resolver:</span> <span class="string">&quot;#&#123;@hostnameKeyResolver&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://admin:admin@localhost:8000/eureka/</span></span><br></pre></td></tr></table></figure>
+
+<p>重启项目，连续并快速地访问<a target="_blank" rel="noopener" href="http://localhost:8030/feign/port/%F0%9F%90%95">http://localhost:8030/feign/port/🐕</a>，在开始的几次正常返回数据后很快就会返回我们期待的结果：<br><code>429 Too Many Requests</code><br>等待几秒再次访问，数据又会变回正常，说明限流成功。并且在此时查询 redis，会发现多了两个类似 request_rate_limiter.{0:0:0:0:0:0:0:1}.timestamp 和 request_rate_limiter.{0:0:0:0:0:0:0:1}.tokens 的 key，如图：<br><img src="03.jpg" alt="03.jpg"></p>
+<h2 id="其他配置"><a href="#其他配置" class="headerlink" title="其他配置"></a>其他配置</h2><h3 id="CORS-跨域处理"><a href="#CORS-跨域处理" class="headerlink" title="CORS 跨域处理"></a>CORS 跨域处理</h3><p>新建跨域测试 html 文件，cors.html：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">      $.get(<span class="string">&quot;http://localhost:8030/feign/port/%F0%9F%90%95&quot;</span>, &#123;&#125;, <span class="function"><span class="keyword">function</span> (<span class="params">r</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">console</span>.log(r);</span></span><br><span class="line"><span class="javascript">      &#125;);</span></span><br><span class="line"><span class="javascript">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>即直接请求接口并在浏览器 console 打印返回信息（需要提前先在 SpringCloudConfig 类把 token 验证的全局过滤器 AuthorizationGlobalFilter 的 bean 注释掉）。<br>之后打开浏览器控制台并打开 cors.html，会发现 console 提示：<br><img src="04.jpg" alt="04.jpg"><br>即跨域请求已被阻止。通常解决方式是创建跨域处理的过滤器，但是 Gateway 可以在 yml 中以更简单的方式实现。修改 gateway 项目的 application.yml，添加 globalcors 配置：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8030</span></span><br><span class="line"></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">@pom.artifactId@</span></span><br><span class="line">  <span class="attr">redis:</span></span><br><span class="line">    <span class="attr">host:</span> <span class="string">localhost</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">6379</span></span><br><span class="line">    <span class="attr">password:</span></span><br><span class="line">    <span class="attr">timeout:</span> <span class="number">500</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="comment">#      discovery:</span></span><br><span class="line">      <span class="comment">#        locator:</span></span><br><span class="line">      <span class="comment">#          enabled: true</span></span><br><span class="line">      <span class="comment">#全局CORS配置</span></span><br><span class="line">      <span class="attr">globalcors:</span></span><br><span class="line">        <span class="comment">#CORS配置类</span></span><br><span class="line">        <span class="attr">corsConfigurations:</span></span><br><span class="line">          <span class="comment">#需要跨域处理的路径</span></span><br><span class="line">          <span class="string">&#x27;[/**]&#x27;</span><span class="string">:</span></span><br><span class="line">            <span class="comment">#允许的请求来源</span></span><br><span class="line">            <span class="attr">allowedOrigins:</span> <span class="string">&quot;*&quot;</span></span><br><span class="line">            <span class="comment">#允许的请求类型（GET，POST等）</span></span><br><span class="line">            <span class="attr">allowedMethods:</span> <span class="string">&quot;*&quot;</span></span><br><span class="line">            <span class="comment">#允许的请求头</span></span><br><span class="line">            <span class="attr">allowedHeaders:</span> <span class="string">&quot;*&quot;</span></span><br><span class="line">            <span class="comment">#是否允许携带凭证</span></span><br><span class="line">            <span class="attr">allowCredentials:</span> <span class="literal">true</span></span><br><span class="line">      <span class="attr">routes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">feign</span></span><br><span class="line">          <span class="attr">uri:</span> <span class="string">lb://FEIGN</span></span><br><span class="line">          <span class="attr">predicates:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">Path=/feign/**</span></span><br><span class="line">          <span class="attr">filters:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">StripPrefix=1</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">PrintUriAndQuery=true</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">RequestRateLimiter</span></span><br><span class="line">              <span class="attr">args:</span></span><br><span class="line">                <span class="attr">redis-rate-limiter.replenishRate:</span> <span class="number">1</span></span><br><span class="line">                <span class="attr">redis-rate-limiter.burstCapacity:</span> <span class="number">3</span></span><br><span class="line">                <span class="attr">key-resolver:</span> <span class="string">&quot;#&#123;@hostnameKeyResolver&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://admin:admin@localhost:8000/eureka/</span></span><br><span class="line"></span><br><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">endpoints:</span></span><br><span class="line">    <span class="attr">web:</span></span><br><span class="line">      <span class="attr">exposure:</span></span><br><span class="line">        <span class="attr">include:</span> <span class="string">httptrace,info,health</span></span><br></pre></td></tr></table></figure>
+
+<p><em>这里的配置和 org.springframework.web.cors.CorsConfiguration 类里面的属性一一对应。</em><br>重启 gateway 项目并刷新 cors.html 页面，console 显示结果：<br><img src="05.jpg" alt="05.jpg"><br>说明跨域处理成功。</p>
+<h2 id="参考来源"><a href="#参考来源" class="headerlink" title="参考来源"></a>参考来源</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://cloud.spring.io/spring-cloud-gateway/reference/html/#gatewayfilter-factories">Spring Cloud GateWay 官方文档</a></li>
+</ol>
+
+        
+    <blockquote>
+<p>本文是maozhijie的原创文章，转载请提前告知作者并且标明出处。<br>内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a> 协议。</p>
+</blockquote>
+
+
+    </div>
+    
+    <div class="donate">
+        <hr/>
+        <button class="donates-btn" onclick="show_donates()">打赏</button>
+        <div class="donate-imgs">
+            
+                <img class="donate-img" src="/images/wechat.jpg" alt="微信打赏"/>
+            
+            
+                <img class="donate-img" src="/images/alipay.jpg" alt="支付宝打赏"/>
+            
+        </div>
+        <script type="text/javascript">
+            function show_donates() {
+                $(".donate-imgs").show();
+                $(".donate-imgs").css("display", "flex");
+                $(".donates-btn").hide();
+            }
+        </script>
+    </div>
+
+</article>
+
+    <hr/>
+    <div class="post-series"><b>系列文章</b> #Spring Cloud
+        
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/25/Spring-Cloud-Greenwich-SR2-0/">
+                        (1)前言
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/25/Spring-Cloud-Greenwich-SR2-1/">
+                        (2)注册中心-Eureka
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/25/Spring-Cloud-Greenwich-SR2-2/">
+                        (3)服务间调用-Feign(🐦)
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/25/Spring-Cloud-Greenwich-SR2-3/">
+                        (4)路由中心-Gateway
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/08/05/Spring-Cloud-Greenwich-SR2-4/">
+                        (5)配置中心-Config
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/08/05/Spring-Cloud-Greenwich-SR2-5/">
+                        (6)配置中心-Bus
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/08/28/Spring-Cloud-Greenwich-SR2-6/">
+                        (7)监控中心-Admin
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/09/17/Spring-Cloud-Greenwich-SR2-7/">
+                        (8)监控中心-Sleuth+Zipkin
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/09/18/Spring-Cloud-Greenwich-SR2-8/">
+                        (9)监控中心-Elasticsearch+Zipkin
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/09/18/Spring-Cloud-Greenwich-SR2-9/">
+                        (10)监控中心-HystrixDashboard+Turbine
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/10/18/Spring-Cloud-Greenwich-SR2-10/">
+                        (11)授权中心-Oauth2+JWT
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/10/23/Spring-Cloud-Greenwich-SR2-11/">
+                        (12)注册中心/配置中心-Nacos
+                    </a>
+                </p>
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/11/13/Spring-Cloud-Greenwich-SR2-12/">
+                        (13)动态路由-Gateway
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2020/01/09/Spring-Cloud-Greenwich-SR2-14/">
+                        (14)授权中心-Oauth2+JWT补全
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2020/02/26/Spring-Cloud-Greenwich-SR2-15/">
+                        (15)授权中心-Oauth2+JWT+HOTP(🐦)
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+
+<div class="pagination-index">
+    
+        <hr/>
+        
+            <a style="float:left;" href="/2019/08/05/Spring-Cloud-Greenwich-SR2-4/"><i class="fas fa-angle-left"></i>配置中心-Config
+            </a>
+        
+        
+            <a style="float:right;" href="/2019/07/25/Spring-Cloud-Greenwich-SR2-2/">服务间调用-Feign<i class="fas fa-angle-right"></i>
+            </a>
+        
+    
+</div>
+
+    <hr/>
+    <button class="blog-post-comments-btn" onclick="show_posts_comments()">显示评论</button>
+    <div class="blog-post-comments" style="display: none">
+        <div id="valine_comments"></div>
+    </div>
+    <script type="text/javascript">
+        function show_posts_comments() {
+            $(".blog-post-comments").show();
+            $(".blog-post-comments-btn").hide();
+        }
+    </script>
+    <hr/>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-Gateway-%E9%A1%B9%E7%9B%AE"><span class="toc-number">1.</span> <span class="toc-text">创建 Gateway 项目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B7%AF%E7%94%B1"><span class="toc-number">2.</span> <span class="toc-text">自定义路由</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-yml-%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">基于 yml 的配置方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-Spring-%E9%85%8D%E7%BD%AE%E7%B1%BB%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">基于 Spring 配置类的配置方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-number">3.</span> <span class="toc-text">自定义过滤器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B1%80%E9%83%A8%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-number">3.1.</span> <span class="toc-text">自定义局部过滤器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B1%80%E9%83%A8%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="toc-number">3.1.1.</span> <span class="toc-text">自定义局部过滤器工厂</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%85%A8%E5%B1%80%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-number">3.2.</span> <span class="toc-text">自定义全局过滤器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%AE%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="toc-number">4.</span> <span class="toc-text">内置过滤器工厂</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%AA%E5%8F%96%E8%AF%B7%E6%B1%82-uri-%E5%89%8D%E7%BC%80%E7%9A%84%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82-StripPrefixGatewayFilterFactory"><span class="toc-number">4.1.</span> <span class="toc-text">截取请求 uri 前缀的过滤器工厂-StripPrefixGatewayFilterFactory</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95%E5%81%9A%E9%99%90%E6%B5%81%E7%9A%84%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82-RequestRateLimiterGatewayFilterFactory"><span class="toc-number">4.2.</span> <span class="toc-text">基于令牌桶算法做限流的过滤器工厂-RequestRateLimiterGatewayFilterFactory</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE"><span class="toc-number">5.</span> <span class="toc-text">其他配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CORS-%E8%B7%A8%E5%9F%9F%E5%A4%84%E7%90%86"><span class="toc-number">5.1.</span> <span class="toc-text">CORS 跨域处理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%9D%A5%E6%BA%90"><span class="toc-number">6.</span> <span class="toc-text">参考来源</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/&text=路由中心-Gateway"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/&title=路由中心-Gateway"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/&is_video=false&description=路由中心-Gateway"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=路由中心-Gateway&body=Check out this article: https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/&title=路由中心-Gateway"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/&title=路由中心-Gateway"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/&title=路由中心-Gateway"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/&title=路由中心-Gateway"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/&name=路由中心-Gateway&description=&lt;p&gt;Gateway 的 Github 页面 Readme 对 Gateway 描述如下：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This project provides an API Gateway built on top of the Spring Ecosystem, including: Spring 5, Spring Boot 2 and Project Reactor. Spring Cloud Gateway aims to provide a simple, yet effective way to route to APIs and provide cross cutting concerns to them such as: security, monitoring/metrics, and resiliency.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;该项目提供了一个建立在 Spring Ecosystem 之上的 API 网关，包括：Spring 5，Spring Boot 2 和 Project Reactor。Spring Cloud Gateway 旨在提供一种简单而有效的方式来路由到 API，并为他们提供横切关注点，例如：安全性，监控/指标和弹性。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;简单来讲（从名字看）官方对 Gateway 的定位是&lt;strong&gt;api 网关&lt;/strong&gt;。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://blog.futurenotfound.top/2019/07/25/Spring-Cloud-Greenwich-SR2-3/&t=路由中心-Gateway"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer"style="display: none">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+<!--        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>-->
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer-extend">
+  <div class="footer-left">
+    &copy;
+    
+    
+    2021
+    maozhijie
+    
+      <a target="_blank" rel="noopener" href='https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh'>CC BY-NC-SA 4.0</a>
+    
+    Powered by
+    <a href="https://hexo.io/" target="_blank" rel="nofollow">hexo</a
+  </div>
+</footer>
+<footer id="footer">
+  <div class="footer-left">
+    
+      <a target="_blank" rel="noopener" href='http://beian.miit.gov.cn/'>陕ICP备2021008394号-1</a>
+      
+    
+		 	<a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61011302001259">陕公网安备 61011302001259号</a>
+    
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/friends/">友链</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // copy-btn HTML
+            var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+            btn += '<i class="far fa-clone"></i>';
+            btn += '</span>';
+            // mount it!
+            $(".highlight table").before(btn);
+            var clip = new ClipboardJS('.btn-copy', {
+                text: function (trigger) {
+                    return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str, it) => str + it.innerText + '\n', '')
+                }
+            });
+            clip.on('success', function (e) {
+                e.trigger.setAttribute('aria-label', "复制成功!");
+                e.clearSelection();
+            })
+        })
+    </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?f01b82d682e8b8c168d7e14cb993e170";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+<!-- Valine Comments -->
+
+    
+<script src="/lib/valine/Valine.min.js"></script>
+
+    <script type="text/javascript">
+        new Valine({
+            el: '#valine_comments',
+            appId: 'PYGSxQwogW3Qi5wie5gbK6tt-gzGzoHsz',
+            appKey: 'VgamBFH9CKcnxsD6oM4Ijm0n',
+            placeholder: '想对作者说点什么？',
+            avatar: 'identicon',
+            pageSize: '8',
+            lang: 'zh-cn',
+            visitor: 'true',
+            recordIP: 'true',
+            enableQQ: 'true',
+            meta: ['nick', 'mail', 'link'],
+            requiredFields: ['nick', 'mail'],
+        });
+    </script>
+
+</body>
+</html>

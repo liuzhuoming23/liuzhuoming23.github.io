@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="两者都来自于 RFC 文档，文档地址分别是：  基于 HMAC 的一次性密码 RFC 4226-HOTP: An HMAC-Based One-Time Password Algorithm 基于时间的一次性密码 rfc 6238-TOTP: Time-Based One-Time Password Algorithm  两者区别就是后者内部可以实现秒级别的密码过期功能。HMAC 是什么暂且不谈，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="短信验证码&amp;两步验证码（HOTP&amp;TOTP）">
+<meta property="og:url" content="https://blog.futurenotfound.top/2020/01/11/hotp-totp/index.html">
+<meta property="og:site_name" content="FutureNotFound">
+<meta property="og:description" content="两者都来自于 RFC 文档，文档地址分别是：  基于 HMAC 的一次性密码 RFC 4226-HOTP: An HMAC-Based One-Time Password Algorithm 基于时间的一次性密码 rfc 6238-TOTP: Time-Based One-Time Password Algorithm  两者区别就是后者内部可以实现秒级别的密码过期功能。HMAC 是什么暂且不谈，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-11T08:03:19.000Z">
+<meta property="article:modified_time" content="2021-07-20T22:29:57.843Z">
+<meta property="article:author" content="maozhijie">
+<meta property="article:tag" content="数据结构">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="验证码">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/avatar.png">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/avatar.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar.png">
+          
+        
+    
+    <!-- title -->
+    <title>短信验证码&amp;两步验证码（HOTP&amp;TOTP）</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="FutureNotFound" type="application/atom+xml" />
+    
+    
+      <script>
+          (function(d) {
+            var config = {
+              kitId: 'twa1wya',
+              scriptTimeout: 3000,
+              async: true
+            },
+            h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+          })(document);
+      </script>
+    
+    <!-- Google Adsense -->
+    
+            <script data-ad-client="ca-pub-8520855660949547" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2020/02/26/Spring-Cloud-Greenwich-SR2-15/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2020/01/09/Spring-Cloud-Greenwich-SR2-14/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="toc-div" class="toc-article" >
+        
+          <div id="toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#HOTP"><span class="toc-number">1.</span> <span class="toc-text">HOTP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TOTP"><span class="toc-number">2.</span> <span class="toc-text">TOTP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E9%AA%8C%E8%AF%81%E7%A0%81%E8%BF%87%E6%9C%9F%E5%80%92%E8%AE%A1%E6%97%B6"><span class="toc-number">2.1.</span> <span class="toc-text">显示验证码过期倒计时</span></a></li></ol></li></ol>
+          </div>
+        
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        
+    <h1 class="posttitle" itemprop="name headline">
+        短信验证码&amp;两步验证码（HOTP&amp;TOTP）
+    </h1>
+
+
+
+        <div class="meta">
+            
+    <div class="postdate">
+      
+        <time datetime="2020-01-11T08:03:19.000Z" itemprop="datePublished">2020-01-11</time>
+        
+      
+    </div>
+
+
+            
+    <div class="article-category">
+<!--        <i class="fas fa-archive"></i>-->
+        <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a> › <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E7%AE%97%E6%B3%95/">算法</a>
+    </div>
+
+
+            
+    <div class="article-tag">
+<!--        <i class="fas fa-tag"></i>-->
+        <a class="tag-link-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a>, <a class="tag-link-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a>, <a class="tag-link-link" href="/tags/%E9%AA%8C%E8%AF%81%E7%A0%81/" rel="tag">验证码</a>
+    </div>
+
+
+            
+    <div class="article-count">
+        <span id="/2020/01/11/hotp-totp/" class="leancloud_visitors" data-flag-title="短信验证码&amp;两步验证码（HOTP&amp;TOTP）">
+            <span class="post-meta-item-text">浏览量</span>
+            <span class="leancloud-visitors-count">0</span>
+        </span>
+    </div>
+
+            
+    <div class="wordcount-symbols">
+      
+        <span>字数</span>
+        <span>5.6k</span>
+      
+    </div>
+    <div class="wordcount-time">
+      
+        <span>阅读时间</span>
+        <span>10 分钟</span>
+      
+    </div>
+
+
+        </div>
+    </header>
+    
+
+    <div class="content" itemprop="articleBody">
+        
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">目录</strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#HOTP"><span class="toc-number">1.</span> <span class="toc-text">HOTP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TOTP"><span class="toc-number">2.</span> <span class="toc-text">TOTP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E9%AA%8C%E8%AF%81%E7%A0%81%E8%BF%87%E6%9C%9F%E5%80%92%E8%AE%A1%E6%97%B6"><span class="toc-number">2.1.</span> <span class="toc-text">显示验证码过期倒计时</span></a></li></ol></li></ol>
+        </div>
+    </div>
+
+<hr/>
+        <p>两者都来自于 RFC 文档，文档地址分别是：</p>
+<ul>
+<li>基于 HMAC 的一次性密码<br> <a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc4226.txt">RFC 4226-HOTP: An HMAC-Based One-Time Password Algorithm</a></li>
+<li>基于时间的一次性密码<br> <a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc6238.txt">rfc 6238-TOTP: Time-Based One-Time Password Algorithm</a></li>
+</ul>
+<p>两者区别就是后者内部可以实现秒级别的密码过期功能。<br><em>HMAC 是什么暂且不谈，有兴趣自行了解。</em></p>
+<span id="more"></span>
+
+<h2 id="HOTP"><a href="#HOTP" class="headerlink" title="HOTP"></a>HOTP</h2><p>这个算法 RFC 文档的实现是基于 Java 的，我们正好 cv 过来创建 HOTP 工具类，不需要做任何修改（**<a href="HOTP.java">点击下载</a>**）。<br>然后创建 Main 类：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> xyz.liuzhuoming;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.security.InvalidKeyException;</span><br><span class="line"><span class="keyword">import</span> java.security.NoSuchAlgorithmException;</span><br><span class="line"><span class="keyword">import</span> java.text.DateFormat;</span><br><span class="line"><span class="keyword">import</span> java.text.SimpleDateFormat;</span><br><span class="line"><span class="keyword">import</span> java.util.TimeZone;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        otp(secret);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//用户密钥，可以基于用户名、用户id等生成</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> String secret = <span class="string">&quot;liuzhuoming&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">otp</span><span class="params">(String secret)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">                String otpaStr = HOTP.generateOTP(secret.getBytes(), i, <span class="number">8</span>, <span class="keyword">true</span>, <span class="number">0</span>);</span><br><span class="line">                System.out.println(otpaStr);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException | InvalidKeyException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行 main 方法得到结果：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">905370920</span><br><span class="line">759986888</span><br><span class="line">113495253</span><br><span class="line">454957150</span><br><span class="line">967146499</span><br><span class="line">261543763</span><br><span class="line">615577400</span><br><span class="line">378770341</span><br><span class="line">267217859</span><br><span class="line">504660382</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>HOTP.generateOTP()</code>方法的参数<code>i</code>是本地模拟的一个每次请求值都不同的变量，第三个参数是验证码的长度，后面两个参数可以忽略。<br>可见随着<code>i</code>的变化验证码也跟着变化，大概符合我们短信验证码登录的需求，做法就是把<code>i</code>放在 Redis（或 Mysql）并取值自增，等到校验的时候从 Redis（或 Mysql）取值不自增并-1，然后重新生成验证码并 equals。<br><em>好像自己写一个<code>0~9A~Za~z</code>的随机验证码存到 Redis，设置过期时间，校验的时候直接拿出来 equals 更直观啊。当然这样做安全性就差了一点。</em></p>
+<h2 id="TOTP"><a href="#TOTP" class="headerlink" title="TOTP"></a>TOTP</h2><p>当年说服同事用这个算法生成短信验证码并校验，忽悠他说只需要在 Redis 存一个时间戳就可以了，比直接存验证码不知道安全到哪里去了。<br>现在想想当然不合适了，因为 TOTP 本身内部就有密码过期功能，和 Redis 的过期时间功能完美重复，像这种基于时间的验证码最适合的场景还是两步验证码的生成，比如早已淘汰的网银密保或者当前正火的谷歌/微软两步验证 APP 或者 Steam 账号密保等。</p>
+<p>这个算法 RFC 文档的实现也是基于 Java 的，我们正好 cv 过来创建 TOTP 工具类，并删除 main 方法，添加一个 String 转 HexString 的方法（**<a href="TOTP.java">点击下载</a>**）。<br>然后创建 Main 类：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> xyz.liuzhuoming;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.security.InvalidKeyException;</span><br><span class="line"><span class="keyword">import</span> java.security.NoSuchAlgorithmException;</span><br><span class="line"><span class="keyword">import</span> java.text.DateFormat;</span><br><span class="line"><span class="keyword">import</span> java.text.SimpleDateFormat;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDateTime;</span><br><span class="line"><span class="keyword">import</span> java.util.TimeZone;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        totp(secret);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//用户密钥，可以基于用户名、用户id等生成</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> String secret = <span class="string">&quot;liuzhuoming&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//计算验证码的时间起点（单位秒）</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">int</span> T0 = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//验证码过期时间间隔（单位秒）</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">long</span> X = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">totp</span><span class="params">(String secret)</span> </span>&#123;</span><br><span class="line">        String seed = TOTP.str2HexStr(secret);</span><br><span class="line"></span><br><span class="line">        StringBuilder steps;</span><br><span class="line">        DateFormat df = <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">        df.setTimeZone(TimeZone.getTimeZone(<span class="string">&quot;UTC&quot;</span>));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">                <span class="comment">//当前时间</span></span><br><span class="line">                LocalDateTime localDateTime = LocalDateTime.now();</span><br><span class="line">                <span class="keyword">long</span> T = (localDateTime.toEpochSecond(ZoneOffset.of(<span class="string">&quot;+8&quot;</span>)) - T0) / X;</span><br><span class="line">                steps = <span class="keyword">new</span> StringBuilder(Long.toHexString(T).toUpperCase());</span><br><span class="line">                <span class="keyword">while</span> (steps.length() &lt; <span class="number">16</span>) steps.insert(<span class="number">0</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">                System.out.println(localDateTime.format(DateTimeFormatter.ofPattern(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>)) + <span class="string">&quot; &gt;&gt;&gt; &quot;</span></span><br><span class="line">                        + TOTP.generateTOTP(seed, steps.toString(), <span class="string">&quot;6&quot;</span>, <span class="string">&quot;HmacSHA256&quot;</span>));</span><br><span class="line">                <span class="comment">//模拟两步验证器的按秒计算验证码</span></span><br><span class="line">                Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行 main 方法得到结果：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">2020-01-11 16:52:34 &gt;&gt;&gt; 625258</span><br><span class="line">2020-01-11 16:52:35 &gt;&gt;&gt; 010708</span><br><span class="line">2020-01-11 16:52:36 &gt;&gt;&gt; 010708</span><br><span class="line">2020-01-11 16:52:37 &gt;&gt;&gt; 010708</span><br><span class="line">2020-01-11 16:52:38 &gt;&gt;&gt; 010708</span><br><span class="line">2020-01-11 16:52:39 &gt;&gt;&gt; 010708</span><br><span class="line">2020-01-11 16:52:40 &gt;&gt;&gt; 280244</span><br><span class="line">2020-01-11 16:52:41 &gt;&gt;&gt; 280244</span><br><span class="line">2020-01-11 16:52:42 &gt;&gt;&gt; 280244</span><br><span class="line">2020-01-11 16:52:43 &gt;&gt;&gt; 280244</span><br></pre></td></tr></table></figure>
+
+<p>可以看到验证码五秒后就过期生成新的验证码，旧的验证码就无法验证了，至于第一个验证码只过了一秒就过期是因为<code>(当前时间-时间起点)/时间间隔</code>结果不是 0 的原因。<br>大概使用方法就是在 Redis（或 Mysql）存一个时间戳，用户请求两步验证器的时候就根据这个时间戳做时间原点生成验证码并返回，校验的时候根据这个时间戳做时间原点生成验证码并 equals。<br>要是是离线的验证器，比如当年的网银实体密保器，快没电的时候必须去银行更换电池，要是自己更换电池验证码就不正确了，其实就是密保器断电之后时间原点重置为开机时间就和服务器保存的时间原点（其实也是密保器发给你的时候的开机时间）不一致了，这时候只要去银行同步一下密保器的时间就可以了。</p>
+<h3 id="显示验证码过期倒计时"><a href="#显示验证码过期倒计时" class="headerlink" title="显示验证码过期倒计时"></a>显示验证码过期倒计时</h3><p>在 Steam 账号密保或者谷歌/微软两步验证上我们会看到会提示验证码的过期秒数，实际上也很容易获取，就是<code>时间间隔-(当前时间-时间原点)%时间间隔</code>的结果，修改 Main 类为：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> xyz.liuzhuoming;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.text.DateFormat;</span><br><span class="line"><span class="keyword">import</span> java.text.SimpleDateFormat;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDateTime;</span><br><span class="line"><span class="keyword">import</span> java.time.ZoneOffset;</span><br><span class="line"><span class="keyword">import</span> java.time.format.DateTimeFormatter;</span><br><span class="line"><span class="keyword">import</span> java.util.TimeZone;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        totp(secret);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//用户密钥，可以基于用户名、用户id等生成</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> String secret = <span class="string">&quot;liuzhuoming&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//计算验证码的时间起点（单位秒）</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">int</span> T0 = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//验证码过期时间间隔（单位秒）</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">long</span> X = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">totp</span><span class="params">(String secret)</span> </span>&#123;</span><br><span class="line">        String seed = TOTP.str2HexStr(secret);</span><br><span class="line"></span><br><span class="line">        StringBuilder steps;</span><br><span class="line">        DateFormat df = <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">        df.setTimeZone(TimeZone.getTimeZone(<span class="string">&quot;UTC&quot;</span>));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">                LocalDateTime localDateTime = LocalDateTime.now();</span><br><span class="line">                <span class="keyword">long</span> T = (localDateTime.toEpochSecond(ZoneOffset.of(<span class="string">&quot;+8&quot;</span>)) - T0) / X;</span><br><span class="line">                <span class="comment">//计算验证码过期剩余时间</span></span><br><span class="line">                <span class="keyword">long</span> remainSeconds = X - ((localDateTime.toEpochSecond(ZoneOffset.of(<span class="string">&quot;+8&quot;</span>)) - T0) % X);</span><br><span class="line">                steps = <span class="keyword">new</span> StringBuilder(Long.toHexString(T).toUpperCase());</span><br><span class="line">                <span class="keyword">while</span> (steps.length() &lt; <span class="number">16</span>) steps.insert(<span class="number">0</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">                System.out.println(localDateTime.format(DateTimeFormatter.ofPattern(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>)) + <span class="string">&quot; &gt;&gt;&gt; &quot;</span></span><br><span class="line">                        + <span class="string">&quot;remain &quot;</span> + remainSeconds + <span class="string">&quot;s &gt;&gt;&gt; &quot;</span></span><br><span class="line">                        + TOTP.generateTOTP(seed, steps.toString(), <span class="string">&quot;6&quot;</span>, <span class="string">&quot;HmacSHA256&quot;</span>));</span><br><span class="line">                Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行 main 方法得到结果：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">2020-01-12 13:51:07 &gt;&gt;&gt; remain 3s &gt;&gt;&gt; 720175</span><br><span class="line">2020-01-12 13:51:08 &gt;&gt;&gt; remain 2s &gt;&gt;&gt; 720175</span><br><span class="line">2020-01-12 13:51:09 &gt;&gt;&gt; remain 1s &gt;&gt;&gt; 720175</span><br><span class="line">2020-01-12 13:51:10 &gt;&gt;&gt; remain 5s &gt;&gt;&gt; 241119</span><br><span class="line">2020-01-12 13:51:11 &gt;&gt;&gt; remain 4s &gt;&gt;&gt; 241119</span><br><span class="line">2020-01-12 13:51:12 &gt;&gt;&gt; remain 3s &gt;&gt;&gt; 241119</span><br><span class="line">2020-01-12 13:51:13 &gt;&gt;&gt; remain 2s &gt;&gt;&gt; 241119</span><br><span class="line">2020-01-12 13:51:14 &gt;&gt;&gt; remain 1s &gt;&gt;&gt; 241119</span><br><span class="line">2020-01-12 13:51:15 &gt;&gt;&gt; remain 5s &gt;&gt;&gt; 249852</span><br><span class="line">2020-01-12 13:51:16 &gt;&gt;&gt; remain 4s &gt;&gt;&gt; 249852</span><br></pre></td></tr></table></figure>
+
+<p>可见其中<code>remain</code>的值符合验证码到期剩余秒数。</p>
+
+        
+    <blockquote>
+<p>本文是maozhijie的原创文章，转载请提前告知作者并且标明出处。<br>内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a> 协议。</p>
+</blockquote>
+
+
+    </div>
+    
+    <div class="donate">
+        <hr/>
+        <button class="donates-btn" onclick="show_donates()">打赏</button>
+        <div class="donate-imgs">
+            
+                <img class="donate-img" src="/images/wechat.jpg" alt="微信打赏"/>
+            
+            
+                <img class="donate-img" src="/images/alipay.jpg" alt="支付宝打赏"/>
+            
+        </div>
+        <script type="text/javascript">
+            function show_donates() {
+                $(".donate-imgs").show();
+                $(".donate-imgs").css("display", "flex");
+                $(".donates-btn").hide();
+            }
+        </script>
+    </div>
+
+</article>
+
+    <hr/>
+    <div class="post-series"><b>系列文章</b> #数据结构与算法
+        
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/16/bloom-filter/">
+                        (1)Bloom filter（布隆过滤器）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/09/12/trie/">
+                        (2)Trie（字典树）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/12/17/%E5%B2%9B%E5%B1%BF%E9%97%AE%E9%A2%98/">
+                        (3)扫雷（岛屿问题）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2020/01/11/hotp-totp/">
+                        (4)短信验证码&amp;两步验证码（HOTP&amp;TOTP）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/">
+                        (5)敏感词过滤（DFA+Trie）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+
+<div class="pagination-index">
+    
+        <hr/>
+        
+            <a style="float:left;" href="/2020/02/26/Spring-Cloud-Greenwich-SR2-15/"><i class="fas fa-angle-left"></i>授权中心-Oauth2+JWT+HOTP
+            </a>
+        
+        
+            <a style="float:right;" href="/2020/01/09/Spring-Cloud-Greenwich-SR2-14/">授权中心-Oauth2+JWT补全<i class="fas fa-angle-right"></i>
+            </a>
+        
+    
+</div>
+
+    <hr/>
+    <button class="blog-post-comments-btn" onclick="show_posts_comments()">显示评论</button>
+    <div class="blog-post-comments" style="display: none">
+        <div id="valine_comments"></div>
+    </div>
+    <script type="text/javascript">
+        function show_posts_comments() {
+            $(".blog-post-comments").show();
+            $(".blog-post-comments-btn").hide();
+        }
+    </script>
+    <hr/>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#HOTP"><span class="toc-number">1.</span> <span class="toc-text">HOTP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TOTP"><span class="toc-number">2.</span> <span class="toc-text">TOTP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%BE%E7%A4%BA%E9%AA%8C%E8%AF%81%E7%A0%81%E8%BF%87%E6%9C%9F%E5%80%92%E8%AE%A1%E6%97%B6"><span class="toc-number">2.1.</span> <span class="toc-text">显示验证码过期倒计时</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://blog.futurenotfound.top/2020/01/11/hotp-totp/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://blog.futurenotfound.top/2020/01/11/hotp-totp/&text=短信验证码&amp;两步验证码（HOTP&amp;TOTP）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://blog.futurenotfound.top/2020/01/11/hotp-totp/&title=短信验证码&amp;两步验证码（HOTP&amp;TOTP）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://blog.futurenotfound.top/2020/01/11/hotp-totp/&is_video=false&description=短信验证码&amp;两步验证码（HOTP&amp;TOTP）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=短信验证码&amp;两步验证码（HOTP&amp;TOTP）&body=Check out this article: https://blog.futurenotfound.top/2020/01/11/hotp-totp/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://blog.futurenotfound.top/2020/01/11/hotp-totp/&title=短信验证码&amp;两步验证码（HOTP&amp;TOTP）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://blog.futurenotfound.top/2020/01/11/hotp-totp/&title=短信验证码&amp;两步验证码（HOTP&amp;TOTP）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://blog.futurenotfound.top/2020/01/11/hotp-totp/&title=短信验证码&amp;两步验证码（HOTP&amp;TOTP）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://blog.futurenotfound.top/2020/01/11/hotp-totp/&title=短信验证码&amp;两步验证码（HOTP&amp;TOTP）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://blog.futurenotfound.top/2020/01/11/hotp-totp/&name=短信验证码&amp;两步验证码（HOTP&amp;TOTP）&description=&lt;p&gt;两者都来自于 RFC 文档，文档地址分别是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;基于 HMAC 的一次性密码&lt;br&gt; &lt;a href=&#34;https://www.rfc-editor.org/rfc/rfc4226.txt&#34;&gt;RFC 4226-HOTP: An HMAC-Based One-Time Password Algorithm&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;基于时间的一次性密码&lt;br&gt; &lt;a href=&#34;https://www.rfc-editor.org/rfc/rfc6238.txt&#34;&gt;rfc 6238-TOTP: Time-Based One-Time Password Algorithm&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;两者区别就是后者内部可以实现秒级别的密码过期功能。&lt;br&gt;&lt;em&gt;HMAC 是什么暂且不谈，有兴趣自行了解。&lt;/em&gt;&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://blog.futurenotfound.top/2020/01/11/hotp-totp/&t=短信验证码&amp;两步验证码（HOTP&amp;TOTP）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer"style="display: none">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+<!--        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>-->
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer-extend">
+  <div class="footer-left">
+    &copy;
+    
+    
+    2021
+    maozhijie
+    
+      <a target="_blank" rel="noopener" href='https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh'>CC BY-NC-SA 4.0</a>
+    
+    Powered by
+    <a href="https://hexo.io/" target="_blank" rel="nofollow">hexo</a
+  </div>
+</footer>
+<footer id="footer">
+  <div class="footer-left">
+    
+      <a target="_blank" rel="noopener" href='http://beian.miit.gov.cn/'>陕ICP备2021008394号-1</a>
+      
+    
+		 	<a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61011302001259">陕公网安备 61011302001259号</a>
+    
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/friends/">友链</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // copy-btn HTML
+            var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+            btn += '<i class="far fa-clone"></i>';
+            btn += '</span>';
+            // mount it!
+            $(".highlight table").before(btn);
+            var clip = new ClipboardJS('.btn-copy', {
+                text: function (trigger) {
+                    return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str, it) => str + it.innerText + '\n', '')
+                }
+            });
+            clip.on('success', function (e) {
+                e.trigger.setAttribute('aria-label', "复制成功!");
+                e.clearSelection();
+            })
+        })
+    </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?f01b82d682e8b8c168d7e14cb993e170";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+<!-- Valine Comments -->
+
+    
+<script src="/lib/valine/Valine.min.js"></script>
+
+    <script type="text/javascript">
+        new Valine({
+            el: '#valine_comments',
+            appId: 'PYGSxQwogW3Qi5wie5gbK6tt-gzGzoHsz',
+            appKey: 'VgamBFH9CKcnxsD6oM4Ijm0n',
+            placeholder: '想对作者说点什么？',
+            avatar: 'identicon',
+            pageSize: '8',
+            lang: 'zh-cn',
+            visitor: 'true',
+            recordIP: 'true',
+            enableQQ: 'true',
+            meta: ['nick', 'mail', 'link'],
+            requiredFields: ['nick', 'mail'],
+        });
+    </script>
+
+</body>
+</html>

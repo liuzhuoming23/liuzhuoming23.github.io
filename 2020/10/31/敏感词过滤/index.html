@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="这几天搜了一下 java 实现敏感词过滤算法，搜索结果前十页都是同一套代码，拷出来运行一下倒是可以运行，但是代码凌乱没有丝毫规范性，看着有点不太行，所以周末抽空自己实现了一下。原理倒是差不多，都是 Trie 做敏感词库，DFA 做匹配算法。这样占用空间小且运行效率高。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="敏感词过滤（DFA+Trie）">
+<meta property="og:url" content="https://blog.futurenotfound.top/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/index.html">
+<meta property="og:site_name" content="FutureNotFound">
+<meta property="og:description" content="这几天搜了一下 java 实现敏感词过滤算法，搜索结果前十页都是同一套代码，拷出来运行一下倒是可以运行，但是代码凌乱没有丝毫规范性，看着有点不太行，所以周末抽空自己实现了一下。原理倒是差不多，都是 Trie 做敏感词库，DFA 做匹配算法。这样占用空间小且运行效率高。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-10-31T09:29:16.000Z">
+<meta property="article:modified_time" content="2021-07-20T22:29:57.863Z">
+<meta property="article:author" content="maozhijie">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="数据结构与算法">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/avatar.png">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/avatar.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar.png">
+          
+        
+    
+    <!-- title -->
+    <title>敏感词过滤（DFA+Trie）</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="FutureNotFound" type="application/atom+xml" />
+    
+    
+      <script>
+          (function(d) {
+            var config = {
+              kitId: 'twa1wya',
+              scriptTimeout: 3000,
+              async: true
+            },
+            h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+          })(document);
+      </script>
+    
+    <!-- Google Adsense -->
+    
+            <script data-ad-client="ca-pub-8520855660949547" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2021/01/26/%E5%85%A8%E5%B1%80%E6%9B%BF%E6%8D%A2System-out-print-%E4%B8%BAlog-info/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2020/09/21/%E4%BD%BF%E7%94%A8-Adobe-Typekit-%E7%BB%99%E5%8D%9A%E5%AE%A2%E6%8D%A2%E6%80%9D%E6%BA%90%E7%B3%BB%E5%88%97%E5%AD%97%E4%BD%93/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="toc-div" class="toc-article" >
+        
+          <div id="toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E6%95%8F%E6%84%9F%E8%AF%8D%E5%BA%93%EF%BC%88%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">构建敏感词库（字典树）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">匹配算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">使用方法</span></a></li></ol>
+          </div>
+        
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        
+    <h1 class="posttitle" itemprop="name headline">
+        敏感词过滤（DFA+Trie）
+    </h1>
+
+
+
+        <div class="meta">
+            
+    <div class="postdate">
+      
+        <time datetime="2020-10-31T09:29:16.000Z" itemprop="datePublished">2020-10-31</time>
+        
+      
+    </div>
+
+
+            
+    <div class="article-category">
+<!--        <i class="fas fa-archive"></i>-->
+        <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a> › <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E7%AE%97%E6%B3%95/">算法</a>
+    </div>
+
+
+            
+    <div class="article-tag">
+<!--        <i class="fas fa-tag"></i>-->
+        <a class="tag-link-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" rel="tag">数据结构与算法</a>, <a class="tag-link-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a>
+    </div>
+
+
+            
+    <div class="article-count">
+        <span id="/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/" class="leancloud_visitors" data-flag-title="敏感词过滤（DFA+Trie）">
+            <span class="post-meta-item-text">浏览量</span>
+            <span class="leancloud-visitors-count">0</span>
+        </span>
+    </div>
+
+            
+    <div class="wordcount-symbols">
+      
+        <span>字数</span>
+        <span>4.2k</span>
+      
+    </div>
+    <div class="wordcount-time">
+      
+        <span>阅读时间</span>
+        <span>8 分钟</span>
+      
+    </div>
+
+
+        </div>
+    </header>
+    
+
+    <div class="content" itemprop="articleBody">
+        
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">目录</strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E6%95%8F%E6%84%9F%E8%AF%8D%E5%BA%93%EF%BC%88%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">构建敏感词库（字典树）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">匹配算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">使用方法</span></a></li></ol>
+        </div>
+    </div>
+
+<hr/>
+        <p>这几天搜了一下 java 实现敏感词过滤算法，搜索结果前十页都是同一套代码，拷出来运行一下倒是可以运行，但是代码凌乱没有丝毫规范性，看着有点不太行，所以周末抽空自己实现了一下。原理倒是差不多，都是 Trie 做敏感词库，DFA 做匹配算法。这样占用空间小且运行效率高。</p>
+<span id="more"></span>
+<h2 id="构建敏感词库（字典树）"><a href="#构建敏感词库（字典树）" class="headerlink" title="构建敏感词库（字典树）"></a>构建敏感词库（字典树）</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 字典树</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.0.1</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Trie</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 是一个词组的结尾</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> containsTail;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 子树</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;Character, Trie&gt; nodes;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Trie</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.containsTail = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">this</span>.nodes = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Trie</span><span class="params">(<span class="keyword">boolean</span> containsTail, HashMap&lt;Character, Trie&gt; nodes)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.containsTail = containsTail;</span><br><span class="line">        <span class="keyword">this</span>.nodes = nodes;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将指定词组加入字典树</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> word 词组</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">        Trie node = <span class="keyword">this</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">char</span> c : word.toCharArray()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!node.nodes.containsKey(c)) &#123;</span><br><span class="line">                node.nodes.put(c, <span class="keyword">new</span> Trie(<span class="keyword">false</span>, <span class="keyword">new</span> HashMap&lt;&gt;()));</span><br><span class="line">            &#125;</span><br><span class="line">            node = node.nodes.get(c);</span><br><span class="line">        &#125;</span><br><span class="line">        node.containsTail = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 这个字符在当前树的子树中是否存在一个节点</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> ch 字符</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">contains</span><span class="params">(<span class="keyword">char</span> ch)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.nodes.containsKey(ch);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 这个字符的位置在当前树的子树中的节点是否是一个结尾</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> ch 字符</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isTail</span><span class="params">(<span class="keyword">char</span> ch)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.nodes.get(ch).containsTail;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="匹配算法"><a href="#匹配算法" class="headerlink" title="匹配算法"></a>匹配算法</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 词组过滤</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.0.1</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WordFilter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Trie trie;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">WordFilter</span><span class="params">(Trie trie)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.trie = trie;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 文本中是否存在指定词组</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> text 文本</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isContainsWord</span><span class="params">(String text)</span> </span>&#123;</span><br><span class="line">        Trie trie = <span class="keyword">this</span>.trie;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">char</span> ch : text.toCharArray()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (trie.contains(ch)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (trie.isTail(ch)) <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                trie = <span class="keyword">this</span>.trie;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            trie = trie.nodes.get(ch);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回文本中存在的指定词组</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> text 文本</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Set&lt;String&gt; <span class="title">containsWords</span><span class="params">(String text)</span> </span>&#123;</span><br><span class="line">        Trie trie = <span class="keyword">this</span>.trie;</span><br><span class="line">        Set&lt;String&gt; stringSet = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">        StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        <span class="keyword">char</span>[] charArray = text.toCharArray();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; charArray.length; i++) &#123;</span><br><span class="line">            <span class="keyword">char</span> ch = charArray[i];</span><br><span class="line">            <span class="keyword">if</span> (trie.contains(ch)) &#123;</span><br><span class="line">                stringBuilder.append(ch);</span><br><span class="line">                <span class="keyword">if</span> (trie.isTail(ch)) &#123;</span><br><span class="line">                    stringSet.add(stringBuilder.toString());</span><br><span class="line">                    <span class="comment">//已匹配结果的话重置字典树和结果串</span></span><br><span class="line">                    trie = <span class="keyword">this</span>.trie;</span><br><span class="line">                    stringBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">//如果节点存在当前字符则替换用来匹配的树为获取当前字符匹配的子树</span></span><br><span class="line">                    trie = trie.nodes.get(ch);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//子串不存在词组中则退回当前测试子串的第二位重新匹配（重要），并重置字典树和结果串</span></span><br><span class="line">                i = i - stringBuilder.length();</span><br><span class="line">                trie = <span class="keyword">this</span>.trie;</span><br><span class="line">                stringBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stringSet.sort(comparator);</span><br><span class="line">        <span class="keyword">return</span> stringSet;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用指定字符替换词组</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> text        文本</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> replaceChar 指定字符</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">replaceWords</span><span class="params">(String text, <span class="keyword">char</span> replaceChar)</span> </span>&#123;</span><br><span class="line">        Set&lt;String&gt; stringSet = containsWords(text);</span><br><span class="line">        <span class="keyword">for</span> (String word : stringSet) &#123;</span><br><span class="line">            StringBuilder replaceWord = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; word.length(); i++) &#123;</span><br><span class="line">                replaceWord.append(replaceChar);</span><br><span class="line">            &#125;</span><br><span class="line">            text = text.replace(word, replaceWord.toString());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> text;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 排序器（重要）</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * 按照词组长度降序排序，这样替换指定词组的时候可以最大化替换为屏蔽字符</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * 示例： 屏蔽词=[西安，陕西西安北]，文本=从陕西西安北站到达西安</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * 如果先替换 西安，则结果为 从陕西**北站到达**，如果先替换 陕西西安北，则结果为 从*****站到达**</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Comparator&lt;String&gt; comparator = Comparator.comparing(String::length).reversed();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>自己百度一下敏感词库并使用<code>Trie.put()</code>方法循环导入字典树中，示例为使用本地txt解析：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> xyz.liuzhuoming;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.StandardCharsets;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 测试</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liuzhuoming</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        List&lt;String&gt; stringSet = readLineTextsFromFile();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//初始化敏感词库，一般会设置为单例，并且启动时候初始化一次就好了，有新的敏感词直接调用接口添加进单例对象中</span></span><br><span class="line">        Trie trie = <span class="keyword">new</span> Trie();</span><br><span class="line">        <span class="keyword">for</span> (String word : stringSet) &#123;</span><br><span class="line">            trie.put(word);</span><br><span class="line">        &#125;</span><br><span class="line">        WordFilter wordFilter = <span class="keyword">new</span> WordFilter(trie);</span><br><span class="line"></span><br><span class="line">        String text = <span class="string">&quot;税票据试试无锡专线目标测试利民投资&quot;</span>;</span><br><span class="line"></span><br><span class="line">        System.out.println(wordFilter.isContainsWord(text));</span><br><span class="line">        System.out.println(wordFilter.containsWords(text));</span><br><span class="line">        System.out.println(wordFilter.replaceWords(text, <span class="string">&#x27;*&#x27;</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;String&gt; <span class="title">readLineTextsFromFile</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;String&gt; stringSet = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        String pathname = <span class="string">&quot;/Users/liuzhuoming/Downloads/wordsFilter.txt&quot;</span>;</span><br><span class="line">        <span class="keyword">try</span> (FileReader reader = <span class="keyword">new</span> FileReader(pathname);</span><br><span class="line">             BufferedReader br = <span class="keyword">new</span> BufferedReader(reader)</span><br><span class="line">        ) &#123;</span><br><span class="line">            String line;</span><br><span class="line">            <span class="keyword">while</span> ((line = br.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">byte</span>[] bytes = Base64.getDecoder().decode(line.trim());</span><br><span class="line">                stringSet.add(<span class="keyword">new</span> String(bytes, StandardCharsets.UTF_8).trim());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> stringSet;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>亲测检测并替换1000长度的文本，在6000词组的库中只需要6毫秒，并且不会有遗漏的情况。</strong></p>
+<p><a href="wordsFilter.txt">测试敏感词库下载</a></p>
+
+        
+    <blockquote>
+<p>本文是maozhijie的原创文章，转载请提前告知作者并且标明出处。<br>内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a> 协议。</p>
+</blockquote>
+
+
+    </div>
+    
+    <div class="donate">
+        <hr/>
+        <button class="donates-btn" onclick="show_donates()">打赏</button>
+        <div class="donate-imgs">
+            
+                <img class="donate-img" src="/images/wechat.jpg" alt="微信打赏"/>
+            
+            
+                <img class="donate-img" src="/images/alipay.jpg" alt="支付宝打赏"/>
+            
+        </div>
+        <script type="text/javascript">
+            function show_donates() {
+                $(".donate-imgs").show();
+                $(".donate-imgs").css("display", "flex");
+                $(".donates-btn").hide();
+            }
+        </script>
+    </div>
+
+</article>
+
+    <hr/>
+    <div class="post-series"><b>系列文章</b> #数据结构与算法
+        
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/07/16/bloom-filter/">
+                        (1)Bloom filter（布隆过滤器）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/09/12/trie/">
+                        (2)Trie（字典树）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2019/12/17/%E5%B2%9B%E5%B1%BF%E9%97%AE%E9%A2%98/">
+                        (3)扫雷（岛屿问题）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2020/01/11/hotp-totp/">
+                        (4)短信验证码&amp;两步验证码（HOTP&amp;TOTP）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <p style="margin:0.425em 0 0.425em 0">
+                    <a href="/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/">
+                        (5)敏感词过滤（DFA+Trie）
+                    </a>
+                </p>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+
+<div class="pagination-index">
+    
+        <hr/>
+        
+            <a style="float:left;" href="/2021/01/26/%E5%85%A8%E5%B1%80%E6%9B%BF%E6%8D%A2System-out-print-%E4%B8%BAlog-info/"><i class="fas fa-angle-left"></i>全局替换 System.out.print() 为 log.info()
+            </a>
+        
+        
+            <a style="float:right;" href="/2020/09/21/%E4%BD%BF%E7%94%A8-Adobe-Typekit-%E7%BB%99%E5%8D%9A%E5%AE%A2%E6%8D%A2%E6%80%9D%E6%BA%90%E7%B3%BB%E5%88%97%E5%AD%97%E4%BD%93/">使用 Adobe Typekit 给博客换思源系列字体<i class="fas fa-angle-right"></i>
+            </a>
+        
+    
+</div>
+
+    <hr/>
+    <button class="blog-post-comments-btn" onclick="show_posts_comments()">显示评论</button>
+    <div class="blog-post-comments" style="display: none">
+        <div id="valine_comments"></div>
+    </div>
+    <script type="text/javascript">
+        function show_posts_comments() {
+            $(".blog-post-comments").show();
+            $(".blog-post-comments-btn").hide();
+        }
+    </script>
+    <hr/>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/friends/">友链</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E6%95%8F%E6%84%9F%E8%AF%8D%E5%BA%93%EF%BC%88%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">构建敏感词库（字典树）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">匹配算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">使用方法</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://blog.futurenotfound.top/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://blog.futurenotfound.top/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/&text=敏感词过滤（DFA+Trie）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://blog.futurenotfound.top/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/&title=敏感词过滤（DFA+Trie）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://blog.futurenotfound.top/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/&is_video=false&description=敏感词过滤（DFA+Trie）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=敏感词过滤（DFA+Trie）&body=Check out this article: https://blog.futurenotfound.top/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://blog.futurenotfound.top/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/&title=敏感词过滤（DFA+Trie）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://blog.futurenotfound.top/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/&title=敏感词过滤（DFA+Trie）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://blog.futurenotfound.top/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/&title=敏感词过滤（DFA+Trie）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://blog.futurenotfound.top/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/&title=敏感词过滤（DFA+Trie）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://blog.futurenotfound.top/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/&name=敏感词过滤（DFA+Trie）&description=&lt;p&gt;这几天搜了一下 java 实现敏感词过滤算法，搜索结果前十页都是同一套代码，拷出来运行一下倒是可以运行，但是代码凌乱没有丝毫规范性，看着有点不太行，所以周末抽空自己实现了一下。原理倒是差不多，都是 Trie 做敏感词库，DFA 做匹配算法。这样占用空间小且运行效率高。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://blog.futurenotfound.top/2020/10/31/%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/&t=敏感词过滤（DFA+Trie）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer"style="display: none">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+<!--        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>-->
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer-extend">
+  <div class="footer-left">
+    &copy;
+    
+    
+    2021
+    maozhijie
+    
+      <a target="_blank" rel="noopener" href='https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh'>CC BY-NC-SA 4.0</a>
+    
+    Powered by
+    <a href="https://hexo.io/" target="_blank" rel="nofollow">hexo</a
+  </div>
+</footer>
+<footer id="footer">
+  <div class="footer-left">
+    
+      <a target="_blank" rel="noopener" href='http://beian.miit.gov.cn/'>陕ICP备2021008394号-1</a>
+      
+    
+		 	<a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61011302001259">陕公网安备 61011302001259号</a>
+    
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a href="/friends/">友链</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // copy-btn HTML
+            var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+            btn += '<i class="far fa-clone"></i>';
+            btn += '</span>';
+            // mount it!
+            $(".highlight table").before(btn);
+            var clip = new ClipboardJS('.btn-copy', {
+                text: function (trigger) {
+                    return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str, it) => str + it.innerText + '\n', '')
+                }
+            });
+            clip.on('success', function (e) {
+                e.trigger.setAttribute('aria-label', "复制成功!");
+                e.clearSelection();
+            })
+        })
+    </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?f01b82d682e8b8c168d7e14cb993e170";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+<!-- Valine Comments -->
+
+    
+<script src="/lib/valine/Valine.min.js"></script>
+
+    <script type="text/javascript">
+        new Valine({
+            el: '#valine_comments',
+            appId: 'PYGSxQwogW3Qi5wie5gbK6tt-gzGzoHsz',
+            appKey: 'VgamBFH9CKcnxsD6oM4Ijm0n',
+            placeholder: '想对作者说点什么？',
+            avatar: 'identicon',
+            pageSize: '8',
+            lang: 'zh-cn',
+            visitor: 'true',
+            recordIP: 'true',
+            enableQQ: 'true',
+            meta: ['nick', 'mail', 'link'],
+            requiredFields: ['nick', 'mail'],
+        });
+    </script>
+
+</body>
+</html>
